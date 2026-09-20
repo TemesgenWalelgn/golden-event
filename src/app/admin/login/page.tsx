@@ -32,7 +32,7 @@ export default function AdminLogin() {
       <div className="bg-white max-w-md w-full rounded-3xl shadow-xl p-8 border border-gray-100">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black text-[var(--brand-green)]">
-            Edom Admin
+            GOLDEN Admin
           </h1>
           <p className="text-xs text-gray-500 mt-1">
             Secure portal access

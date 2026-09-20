@@ -70,8 +70,8 @@ export default function AdminDashboard() {
   const [showEventPanel, setShowEventPanel] = useState(false);
 
   // Safe Cloudinary fallbacks
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "edom_gallery";
-  const uploadPreset = siteConfig.uploadPreset || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "edom_gallery";
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "golden-event";
+  const uploadPreset = siteConfig.uploadPreset || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "golden-event";
 
   // ===== AUTHENTICATION CHECK =====
   useEffect(() => {
@@ -107,8 +107,8 @@ export default function AdminDashboard() {
 
   // Sync cache immediately on client mount
   useEffect(() => {
-    const cachedTheme = localStorage.getItem("edom_theme_name");
-    const cachedEnabled = localStorage.getItem("edom_theme_enabled");
+    const cachedTheme = localStorage.getItem("golden_event_theme_name");
+    const cachedEnabled = localStorage.getItem("golden_event_theme_enabled");
     if (cachedTheme) setEventTheme(cachedTheme);
     if (cachedEnabled !== null) setEventEnabled(cachedEnabled === "true");
   }, []);
@@ -188,8 +188,8 @@ export default function AdminDashboard() {
         setEventParticles(data.particles === true);
 
         if (typeof window !== "undefined") {
-          localStorage.setItem("edom_theme_name", data.event || "none");
-          localStorage.setItem("edom_theme_enabled", data.enabled === true ? "true" : "false");
+          localStorage.setItem("golden_event_theme_name", data.event || "none");
+          localStorage.setItem("golden_event_theme_enabled", data.enabled === true ? "true" : "false");
         }
       },
       (error) => {
@@ -214,12 +214,13 @@ export default function AdminDashboard() {
     );
   }, [isAuthenticated]);
 
+  // Updated to Golden Event Categories
   const getDefaultSubCategories = (tab: string) => {
-    if (tab === "flower") {
+    if (tab === "decor") {
       return ["all", "wedding", "shimigilina", "birthday", "anniversery", "graduation"];
     }
 
-    if (tab === "direOnline") {
+    if (tab === "goldenstore") {
       return ["all", "mens", "womans"];
     }
 
@@ -313,10 +314,10 @@ export default function AdminDashboard() {
       if (targetTempSub) {
         targetTabType = targetTempSub.type;
       } else {
-        const flowerDefaults = getDefaultSubCategories("flower");
-        const direDefaults = getDefaultSubCategories("direOnline");
-        if (flowerDefaults.includes(copyTargetSub)) targetTabType = "flower";
-        else if (direDefaults.includes(copyTargetSub)) targetTabType = "direOnline";
+        const decorDefaults = getDefaultSubCategories("decor");
+        const goldenDefaults = getDefaultSubCategories("goldenstore");
+        if (decorDefaults.includes(copyTargetSub)) targetTabType = "decor";
+        else if (goldenDefaults.includes(copyTargetSub)) targetTabType = "goldenstore";
         else targetTabType = "surprise";
       }
 
@@ -378,8 +379,8 @@ export default function AdminDashboard() {
       });
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("edom_theme_name", eventTheme);
-        localStorage.setItem("edom_theme_enabled", eventEnabled ? "true" : "false");
+        localStorage.setItem("golden_event_theme_name", eventTheme);
+        localStorage.setItem("golden_event_theme_enabled", eventEnabled ? "true" : "false");
       }
 
     } catch (error) {
@@ -587,7 +588,7 @@ export default function AdminDashboard() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--brand-bg)]">
-        <div className="animate-pulse text-[var(--brand-green)] font-bold text-lg">Verifying Access...</div>
+        <div className="animate-pulse text-[var(--brand-gold)] font-bold text-lg">Verifying Access...</div>
       </div>
     );
   }
@@ -619,7 +620,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 h-16 md:h-20 flex items-center justify-between">
 
           <div className="flex flex-col">
-            <span className="text-lg md:text-2xl font-black text-[var(--brand-green)] tracking-tight">
+            <span className="text-lg md:text-2xl font-black text-[var(--brand-gold)] tracking-tight">
               Admin Portal
             </span>
 
@@ -655,7 +656,7 @@ export default function AdminDashboard() {
                   setProduct(getInitialFormState());
                   setIsAdding(true);
                 }}
-                className="px-4 py-2 bg-[var(--brand-green)] text-white text-xs md:text-sm font-bold rounded-full shadow-md hover:opacity-95 transition-all"
+                className="px-4 py-2 bg-[var(--brand-gold)] text-[var(--text-on-gold)] text-xs md:text-sm font-bold rounded-full shadow-md hover:opacity-95 transition-all"
               >
                 + Add New
               </button>
@@ -692,17 +693,17 @@ export default function AdminDashboard() {
 
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-xl font-black text-[var(--text-dark)]">
+                <h2 className="text-xl font-black text-[var(--text-primary)]">
                   🎨 Event Theme
                 </h2>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Control the seasonal design on both pages.
                 </p>
               </div>
 
               <button
                 onClick={() => setShowEventPanel(false)}
-                className="text-gray-400 hover:text-black font-bold text-lg"
+                className="text-gray-400 hover:text-white font-bold text-lg"
               >
                 ✕
               </button>
@@ -726,12 +727,12 @@ export default function AdminDashboard() {
                   onChange={(e) =>
                     setEventEnabled(e.target.checked)
                   }
-                  className="w-5 h-5 accent-[var(--brand-green)]"
+                  className="w-5 h-5 accent-[var(--brand-gold)]"
                 />
               </label>
 
               <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1">
+                <label className="block text-xs font-bold text-gray-400 mb-1">
                   Choose Event
                 </label>
 
@@ -741,7 +742,7 @@ export default function AdminDashboard() {
                   className="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white text-gray-800 outline-none"
                 >
                   <option value="none">
-                    Normal EDOM Theme
+                    Normal GOLDEN Theme
                   </option>
                   <option value="newyear">
                     🇪🇹 Ethiopian New Year
@@ -775,7 +776,7 @@ export default function AdminDashboard() {
                   onChange={(e) =>
                     setEventAnimation(e.target.checked)
                   }
-                  className="w-5 h-5 accent-[var(--brand-green)]"
+                  className="w-5 h-5 accent-[var(--brand-gold)]"
                 />
               </label>
 
@@ -790,14 +791,14 @@ export default function AdminDashboard() {
                   onChange={(e) =>
                     setEventParticles(e.target.checked)
                   }
-                  className="w-5 h-5 accent-[var(--brand-green)]"
+                  className="w-5 h-5 accent-[var(--brand-gold)]"
                 />
               </label>
 
               <button
                 onClick={saveEventTheme}
                 disabled={savingEventTheme}
-                className="w-full py-3 bg-[var(--brand-green)] text-white rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition-all"
+                className="w-full py-3 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition-all"
               >
                 {savingEventTheme
                   ? "Saving..."
@@ -812,15 +813,15 @@ export default function AdminDashboard() {
       {/* ===== TEMPORARY SUBCATEGORY CONFIGURATION MODAL ===== */}
       {showConfigModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--brand-light)] w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
+          <div className="bg-[var(--brand-light)] w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-gray-800 max-h-[90vh] overflow-y-auto">
 
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-xl font-black text-[var(--text-dark)]">
+                <h2 className="text-xl font-black text-[var(--text-primary)]">
                   Temporary Packages
                 </h2>
 
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Create as many temporary subcategories as you need.
                 </p>
               </div>
@@ -830,15 +831,15 @@ export default function AdminDashboard() {
                   setShowConfigModal(false);
                   resetTempForm();
                 }}
-                className="text-gray-400 hover:text-black font-bold text-lg"
+                className="text-gray-400 hover:text-white font-bold text-lg"
               >
                 ✕
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl border-2 border-gray-100 bg-gray-50/50 mb-6">
+            <div className="p-4 rounded-2xl border-2 border-[var(--border-subtle)] bg-[var(--surface-secondary)] mb-6">
 
-              <h3 className="font-extrabold text-sm text-[var(--brand-green)] mb-4">
+              <h3 className="font-extrabold text-sm text-[var(--brand-gold)] mb-4">
                 {editingTempId
                   ? "Edit Temporary Subcategory"
                   : "Create New Temporary Subcategory"}
@@ -854,11 +855,11 @@ export default function AdminDashboard() {
                       type: e.target.value
                     }))
                   }
-                  className="p-3 border border-gray-200 rounded-xl text-xs bg-white text-gray-800 outline-none font-medium"
+                  className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium"
                 >
                   <option value="surprise">Surprise</option>
-                  <option value="flower">Flowers</option>
-                  <option value="direOnline">Dire Online</option>
+                  <option value="decor">Decor</option>
+                  <option value="goldenstore">Golden Store</option>
                 </select>
 
                 <input
@@ -874,7 +875,7 @@ export default function AdminDashboard() {
                       }
                     }))
                   }
-                  className="p-3 border border-gray-200 rounded-xl text-xs bg-white text-gray-800 outline-none font-medium"
+                  className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium"
                 />
 
                 <input
@@ -890,7 +891,7 @@ export default function AdminDashboard() {
                       }
                     }))
                   }
-                  className="p-3 border border-gray-200 rounded-xl text-xs bg-white text-gray-800 outline-none font-medium"
+                  className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium"
                 />
 
               </div>
@@ -910,10 +911,10 @@ export default function AdminDashboard() {
                       }
                     }))
                   }
-                  className="p-3 border border-gray-200 rounded-xl text-xs bg-white text-gray-800 outline-none font-medium"
+                  className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium"
                 />
 
-                <label className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer">
+                <label className="flex items-center gap-3 p-3 bg-[var(--brand-bg)] rounded-xl border border-[var(--border-subtle)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={tempForm.enabled}
@@ -923,10 +924,10 @@ export default function AdminDashboard() {
                         enabled: e.target.checked
                       }))
                     }
-                    className="w-4 h-4 accent-[var(--brand-green)]"
+                    className="w-4 h-4 accent-[var(--brand-gold)]"
                   />
 
-                  <span className="text-xs font-bold text-gray-700">
+                  <span className="text-xs font-bold text-gray-300">
                     Visible to customers
                   </span>
                 </label>
@@ -937,7 +938,7 @@ export default function AdminDashboard() {
 
                 <button
                   onClick={saveTempSubCategory}
-                  className="flex-1 py-3 bg-[var(--brand-green)] text-white rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition-all"
+                  className="flex-1 py-3 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition-all"
                 >
                   {editingTempId
                     ? "Update"
@@ -947,7 +948,7 @@ export default function AdminDashboard() {
                 {editingTempId && (
                   <button
                     onClick={resetTempForm}
-                    className="px-4 py-3 bg-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-300 transition-all"
+                    className="px-4 py-3 bg-gray-700 text-white rounded-xl font-bold text-sm hover:bg-gray-600 transition-all"
                   >
                     New
                   </button>
@@ -958,41 +959,41 @@ export default function AdminDashboard() {
 
             <div className="space-y-3">
 
-              <h3 className="font-extrabold text-sm text-gray-700">
+              <h3 className="font-extrabold text-sm text-gray-300">
                 Existing Temporary Categories
               </h3>
 
               {tempSubCategories.length === 0 ? (
-                <div className="p-5 text-center rounded-2xl bg-gray-50 border border-gray-100 text-xs text-gray-500">
+                <div className="p-5 text-center rounded-2xl bg-[var(--surface-secondary)] border border-[var(--border-subtle)] text-xs text-gray-500">
                   No temporary subcategories created yet.
                 </div>
               ) : (
                 tempSubCategories.map((temp, index) => (
                   <div
                     key={`${temp.id}-${index}`}
-                    className="p-4 rounded-2xl border border-gray-200 bg-white flex flex-col md:flex-row md:items-center gap-3 justify-between"
+                    className="p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)] flex flex-col md:flex-row md:items-center gap-3 justify-between"
                   >
 
                     <div className="min-w-0">
 
                       <div className="flex items-center gap-2 flex-wrap">
 
-                        <span className="font-black text-sm text-[var(--brand-green)]">
+                        <span className="font-black text-sm text-[var(--brand-gold)]">
                           {temp.name.en ||
                             temp.name.am ||
                             temp.name.om ||
                             "Unnamed"}
                         </span>
 
-                        <span className="text-[10px] uppercase font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-500">
+                        <span className="text-[10px] uppercase font-bold px-2 py-1 rounded-full bg-gray-800 text-gray-300">
                           {temp.type}
                         </span>
 
                         <span
                           className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${
                             temp.enabled
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-500"
+                              ? "bg-green-900 text-green-300"
+                              : "bg-gray-800 text-gray-400"
                           }`}
                         >
                           {temp.enabled ? "Visible" : "Hidden"}
@@ -1000,7 +1001,7 @@ export default function AdminDashboard() {
 
                       </div>
 
-                      <p className="text-[11px] text-gray-500 mt-1">
+                      <p className="text-[11px] text-gray-400 mt-1">
                         AM: {temp.name.am || "-"} · OM:{" "}
                         {temp.name.om || "-"}
                       </p>
@@ -1015,8 +1016,8 @@ export default function AdminDashboard() {
                         }
                         className={`px-3 py-2 rounded-xl text-xs font-bold ${
                           temp.enabled
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-green-100 text-green-700"
+                            ? "bg-amber-900 text-amber-300"
+                            : "bg-green-900 text-green-300"
                         }`}
                       >
                         {temp.enabled ? "Disable" : "Enable"}
@@ -1026,7 +1027,7 @@ export default function AdminDashboard() {
                         onClick={() =>
                           openTempConfigForEdit(temp)
                         }
-                        className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100"
+                        className="p-2 bg-blue-900/50 text-blue-400 rounded-xl hover:bg-blue-900"
                         title="Edit"
                       >
                         <Pencil size={14} />
@@ -1036,7 +1037,7 @@ export default function AdminDashboard() {
                         onClick={() =>
                           deleteTempSubCategory(temp.id)
                         }
-                        className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100"
+                        className="p-2 bg-red-900/50 text-red-400 rounded-xl hover:bg-red-900"
                         title="Delete"
                       >
                         <Trash2 size={14} />
@@ -1058,10 +1059,10 @@ export default function AdminDashboard() {
           <div className="bg-[var(--brand-light)] w-full max-w-md rounded-3xl p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-xl font-black text-[var(--text-dark)]">
+                <h2 className="text-xl font-black text-[var(--text-primary)]">
                   Duplicate Package
                 </h2>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Copy this package to another subcategory.
                 </p>
               </div>
@@ -1070,27 +1071,27 @@ export default function AdminDashboard() {
                   setCopyingProduct(null);
                   setCopyTargetSub("");
                 }}
-                className="text-gray-400 hover:text-black font-bold text-lg"
+                className="text-gray-400 hover:text-white font-bold text-lg"
               >
                 ✕
               </button>
             </div>
 
-            <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100 mb-4">
-              <p className="text-xs font-bold text-gray-500">Current package</p>
-              <p className="text-sm font-black text-[var(--brand-green)] mt-1">
+            <div className="p-3 rounded-2xl bg-[var(--surface-secondary)] border border-[var(--border-subtle)] mb-4">
+              <p className="text-xs font-bold text-gray-400">Current package</p>
+              <p className="text-sm font-black text-[var(--brand-gold)] mt-1">
                 {Number(copyingProduct.price).toLocaleString()} ETB
               </p>
             </div>
 
-            <label className="block text-xs font-bold text-gray-500 mb-1">
+            <label className="block text-xs font-bold text-gray-400 mb-1">
               Copy to subcategory
             </label>
 
             <select
               value={copyTargetSub}
               onChange={(e) => setCopyTargetSub(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white text-gray-800 outline-none mb-4"
+              className="w-full p-3 border border-[var(--border-subtle)] rounded-xl text-sm bg-[var(--brand-bg)] text-white outline-none mb-4"
             >
               <option value="">Select destination</option>
               {getSubCategories()
@@ -1110,7 +1111,7 @@ export default function AdminDashboard() {
             <button
               onClick={duplicateProduct}
               disabled={!copyTargetSub}
-              className="w-full py-3 bg-[var(--brand-green)] text-white rounded-xl font-bold text-sm disabled:opacity-40"
+              className="w-full py-3 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-xl font-bold text-sm disabled:opacity-40"
             >
               Duplicate Package
             </button>
@@ -1124,32 +1125,32 @@ export default function AdminDashboard() {
         {/* ===== PRIVATE ADMIN ANALYTICS CARDS ===== */}
         {!isAdding && (
           <div className="grid grid-cols-3 gap-3 md:gap-6 mb-8">
-            <div className="bg-white border border-gray-200/80 rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between text-gray-400 mb-1">
                 <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Store Visits</span>
-                <Users size={16} className="text-[var(--brand-green)]" />
+                <Users size={16} className="text-[var(--brand-gold)]" />
               </div>
-              <span className="text-xl md:text-3xl font-black text-gray-900">
+              <span className="text-xl md:text-3xl font-black text-[var(--text-primary)]">
                 {analytics.totalPageViews.toLocaleString()}
               </span>
             </div>
 
-            <div className="bg-white border border-gray-200/80 rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between text-gray-400 mb-1">
                 <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Orders Initiated</span>
-                <ShoppingCart size={16} className="text-[var(--event-primary)]" />
+                <ShoppingCart size={16} className="text-[var(--brand-gold)]" />
               </div>
-              <span className="text-xl md:text-3xl font-black text-[var(--event-primary)]">
+              <span className="text-xl md:text-3xl font-black text-[var(--brand-gold)]">
                 {analytics.totalOrdersClicked.toLocaleString()}
               </span>
             </div>
 
-            <div className="bg-white border border-gray-200/80 rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between text-gray-400 mb-1">
                 <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Conversion</span>
                 <TrendingUp size={16} className="text-emerald-500" />
               </div>
-              <span className="text-xl md:text-3xl font-black text-emerald-600">
+              <span className="text-xl md:text-3xl font-black text-emerald-500">
                 {conversionRate}%
               </span>
             </div>
@@ -1157,7 +1158,7 @@ export default function AdminDashboard() {
         )}
 
         <div className="text-center mb-6">
-          <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-green)]">
+          <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold-light)] to-[var(--brand-gold)]">
             Manage Inventory
           </h1>
         </div>
@@ -1167,16 +1168,16 @@ export default function AdminDashboard() {
 
           {[
             { id: "surprise", label: "Surprise" },
-            { id: "flower", label: "Flowers" },
-            { id: "direOnline", label: "Dire Online" }
+            { id: "decor", label: "Decor" },
+            { id: "goldenstore", label: "Golden Store" }
           ].map((tab, index) => (
             <button
               key={`${tab.id}-${index}`}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 md:px-6 py-2 rounded-full font-bold transition-all duration-300 border text-xs md:text-base whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "bg-[var(--brand-green)] text-white border-[var(--brand-green)] shadow-md"
-                  : "bg-[var(--brand-light)] text-[var(--brand-green)] border-[var(--brand-green)] hover:bg-[var(--soft-green)]"
+                  ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] border-[var(--brand-gold)] shadow-md"
+                  : "bg-transparent text-[var(--brand-gold)] border-[var(--brand-gold)] hover:bg-[var(--surface-secondary)]"
               }`}
             >
               {tab.label}
@@ -1203,10 +1204,10 @@ export default function AdminDashboard() {
                   title="Drag to change position"
                   className={`px-3.5 py-1.5 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap flex-shrink-0 cursor-grab active:cursor-grabbing ${
                     activeSub === sub
-                      ? "bg-[var(--text-dark)] text-white shadow-sm"
+                      ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] shadow-sm"
                       : isTemp
-                      ? "bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200"
-                      : "bg-[var(--brand-light)] text-gray-500 border border-gray-200 hover:bg-gray-100"
+                      ? "bg-amber-900/40 text-amber-400 border border-amber-800/50 hover:bg-amber-900/60"
+                      : "bg-[var(--surface-secondary)] text-white border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)]"
                   }`}
                 >
                   {isTemp
@@ -1223,7 +1224,7 @@ export default function AdminDashboard() {
               setSortOption(e.target.value);
               setProducts((prev) => sortProductList(prev));
             }}
-            className="self-center px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-600 outline-none"
+            className="self-center px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-xs font-bold text-white outline-none"
             title="Sort package list"
           >
             <option value="newest">Newest First</option>
@@ -1269,20 +1270,20 @@ export default function AdminDashboard() {
               fetchProducts();
               setLoading(false);
             }}
-            className="max-w-xl mx-auto bg-[var(--brand-light)] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-100"
+            className="max-w-xl mx-auto bg-[var(--surface-card)] p-6 md:p-8 rounded-3xl shadow-xl border border-[var(--border-subtle)]"
           >
 
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--text-dark)]">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--text-primary)]">
               {editingId ? "Edit" : "Add"}{" "}
               {activeTab.toUpperCase()}
             </h2>
 
-            <label className="block text-xs font-bold text-gray-500 mb-1">
+            <label className="block text-xs font-bold text-gray-400 mb-1">
               Subcategory
             </label>
 
             <select
-              className="w-full p-3.5 mb-4 border-2 border-gray-200 rounded-2xl bg-[var(--brand-light)] text-[var(--text-dark)] font-medium focus:border-[var(--brand-green)] outline-none text-sm"
+              className="w-full p-3.5 mb-4 border-2 border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-white font-medium focus:border-[var(--brand-gold)] outline-none text-sm"
               value={product.subCategory || ""}
               onChange={(e) =>
                 setProduct({
@@ -1318,12 +1319,12 @@ export default function AdminDashboard() {
                 })}
             </select>
 
-            <label className="block text-xs font-bold text-gray-500 mb-1">
+            <label className="block text-xs font-bold text-gray-400 mb-1">
               Price (ETB)
             </label>
 
             <input
-              className="w-full p-3.5 mb-4 border-2 border-gray-200 rounded-2xl bg-[var(--brand-light)] text-[var(--text-dark)] font-medium placeholder-gray-400 focus:border-[var(--brand-green)] outline-none text-sm"
+              className="w-full p-3.5 mb-4 border-2 border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-white font-medium placeholder-gray-600 focus:border-[var(--brand-gold)] outline-none text-sm"
               type="number"
               placeholder="e.g. 1500"
               value={product.price}
@@ -1338,14 +1339,14 @@ export default function AdminDashboard() {
 
             <div className="space-y-3 mb-4">
 
-              <label className="block text-xs font-bold text-gray-500 mb-1">
+              <label className="block text-xs font-bold text-gray-400 mb-1">
                 Descriptions (Multi-language)
               </label>
 
               {["am", "en", "om"].map((lang) => (
                 <textarea
                   key={lang}
-                  className="w-full p-3 border-2 border-gray-200 rounded-2xl bg-[var(--brand-light)] text-[var(--text-dark)] font-medium placeholder-gray-400 h-20 focus:border-[var(--brand-green)] outline-none text-xs md:text-sm"
+                  className="w-full p-3 border-2 border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-white font-medium placeholder-gray-600 h-20 focus:border-[var(--brand-gold)] outline-none text-xs md:text-sm"
                   placeholder={`Description (${lang.toUpperCase()})`}
                   value={
                     product.description[
@@ -1369,7 +1370,7 @@ export default function AdminDashboard() {
 
             <div className="mb-6">
 
-              <label className="block text-xs font-bold text-[var(--text-dark)] mb-2">
+              <label className="block text-xs font-bold text-white mb-2">
                 Images (
                 {product.images.length}/
                 {activeTab === "surprise" ? "1" : "3"})
@@ -1427,7 +1428,7 @@ export default function AdminDashboard() {
                     <button
                       type="button"
                       onClick={() => open?.()}
-                      className="w-full py-3 bg-[var(--text-dark)] text-[var(--brand-light)] rounded-2xl font-bold text-xs md:text-sm shadow-md hover:bg-black transition-all"
+                      className="w-full py-3 bg-[var(--surface-secondary)] text-white border border-[var(--border-subtle)] rounded-2xl font-bold text-xs md:text-sm shadow-md hover:bg-gray-800 transition-all"
                     >
                       Upload Image{" "}
                       {activeTab === "surprise"
@@ -1444,7 +1445,7 @@ export default function AdminDashboard() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-[var(--brand-green)] text-white rounded-2xl font-bold text-sm md:text-base shadow-lg hover:opacity-95 transition-all disabled:opacity-50"
+              className="w-full py-3.5 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-2xl font-bold text-sm md:text-base shadow-lg hover:opacity-95 transition-all disabled:opacity-50"
             >
               {loading ? "Saving..." : "Save Product"}
             </button>
@@ -1456,7 +1457,7 @@ export default function AdminDashboard() {
                 setEditingId(null);
                 setProduct(getInitialFormState());
               }}
-              className="w-full mt-2 py-2 text-gray-500 text-xs font-semibold hover:text-black"
+              className="w-full mt-2 py-2 text-gray-400 text-xs font-semibold hover:text-white"
             >
               Cancel
             </button>
@@ -1471,7 +1472,7 @@ export default function AdminDashboard() {
 
               <div
                 key={`${p.id}-${index}`}
-                className={`theme-card bg-[var(--brand-light)] rounded-3xl p-3 md:p-4 shadow-sm border border-gray-100 flex flex-row items-stretch gap-4 transition-all ${
+                className={`theme-card bg-[var(--surface-card)] rounded-3xl p-3 md:p-4 shadow-sm border border-[var(--border-subtle)] flex flex-row items-stretch gap-4 transition-all ${
                   p.visible === false ? "opacity-50" : ""
                 } ${eventAnimation ? "theme-animate" : ""}`}
               >
@@ -1508,17 +1509,17 @@ export default function AdminDashboard() {
 
                     </div>
 
-                    <p className="text-lg md:text-xl font-black text-[var(--event-primary)] mb-1">
+                    <p className="text-lg md:text-xl font-black text-[var(--brand-gold)] mb-1">
                       {Number(p.price).toLocaleString()} ETB
                     </p>
 
-                    <p className="text-[11px] text-gray-500 line-clamp-3 italic mb-2">
+                    <p className="text-[11px] text-gray-300 line-clamp-3 italic mb-2">
                       {p.description.en || p.description.am}
                     </p>
 
                   </div>
 
-                  <div className="flex items-center justify-between gap-1 pt-2 border-t border-gray-100">
+                  <div className="flex items-center justify-between gap-1 pt-2 border-t border-[var(--border-subtle)]">
 
                     <button
                       onClick={() =>
@@ -1526,8 +1527,8 @@ export default function AdminDashboard() {
                       }
                       className={`p-2 rounded-xl text-xs flex items-center justify-center transition-colors ${
                         p.visible === false
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          ? "bg-amber-900/50 text-amber-400"
+                          : "bg-[var(--surface-secondary)] text-gray-300 hover:bg-gray-700"
                       }`}
                       title="Toggle Visibility"
                     >
@@ -1540,7 +1541,7 @@ export default function AdminDashboard() {
 
                     <button
                       onClick={() => handleEdit(p)}
-                      className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"
+                      className="p-2 bg-blue-900/30 text-blue-400 rounded-xl hover:bg-blue-900/50 transition-colors"
                       title="Edit Product"
                     >
                       <Pencil size={14} />
@@ -1551,7 +1552,7 @@ export default function AdminDashboard() {
                         setCopyingProduct(p);
                         setCopyTargetSub("");
                       }}
-                      className="p-2 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100 transition-colors"
+                      className="p-2 bg-purple-900/30 text-purple-400 rounded-xl hover:bg-purple-900/50 transition-colors"
                       title="Duplicate Product"
                     >
                       📋
@@ -1559,7 +1560,7 @@ export default function AdminDashboard() {
 
                     <button
                       onClick={() => handleDelete(p.id)}
-                      className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"
+                      className="p-2 bg-red-900/30 text-red-400 rounded-xl hover:bg-red-900/50 transition-colors"
                       title="Delete Product"
                     >
                       <Trash2 size={14} />
@@ -1576,7 +1577,7 @@ export default function AdminDashboard() {
       </main>
 
       {/* ===== CLASSIC FOOTER ===== */}
-      <footer className="bg-[var(--text-dark)] text-white mt-12 py-8 px-4 md:px-6 lg:px-10 border-t border-gray-800">
+      <footer className="bg-[var(--text-dark)] text-white mt-12 py-8 px-4 md:px-6 lg:px-10 border-t border-[var(--border-subtle)]">
 
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
 

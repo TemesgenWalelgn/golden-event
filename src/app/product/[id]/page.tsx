@@ -52,7 +52,7 @@ export default function ProductDetails({
   }
 
   const telegramMessage = encodeURIComponent(
-    `Hello Edom Gallery & Surprise Delivery,
+    `Hello GOLDEN Event Team! I would like to place an order for the following product:,
 I would like to order:
 
 Product: ${product.title}

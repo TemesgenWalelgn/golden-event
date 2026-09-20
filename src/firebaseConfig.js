@@ -6,9 +6,9 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDI92Tno_5LkTfjAzE04uX3RAwsrizXZA4",
-  authDomain: "edom-gallery.firebaseapp.com",
+  authDomain: "golden-event.firebaseapp.com",
   projectId: "edom-gallery",
-  storageBucket: "edom-gallery.firebasestorage.app",
+  storageBucket: "golden-event.firebasestorage.app",
   messagingSenderId: "1022200981405",
   appId: "1:1022200981405:web:bb7e3c871c2aa71e69f174",
   measurementId: "G-8FFEXS2RG1"

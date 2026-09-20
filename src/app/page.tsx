@@ -55,7 +55,7 @@ export default function UserPage() {
 
   // ===== TRACK USER PAGE VIEW (1 Count Per Browser Session) =====
   useEffect(() => {
-    const hasVisitedSession = sessionStorage.getItem("edom_visited_session");
+    const hasVisitedSession = sessionStorage.getItem("golden_visited_session");
     if (!hasVisitedSession) {
       const analyticsRef = doc(db, "analytics", "overview");
       setDoc(
@@ -66,14 +66,14 @@ export default function UserPage() {
         { merge: true }
       ).catch((err) => console.error("Error recording page view:", err));
 
-      sessionStorage.setItem("edom_visited_session", "true");
+      sessionStorage.setItem("golden_visited_session", "true");
     }
   }, []);
 
   // Sync cache immediately on client mount
   useEffect(() => {
-    const cachedTheme = localStorage.getItem("edom_theme_name");
-    const cachedEnabled = localStorage.getItem("edom_theme_enabled");
+    const cachedTheme = localStorage.getItem("golden_event_theme");
+    const cachedEnabled = localStorage.getItem("golden_event_enabled");
     if (cachedTheme) setEventTheme(cachedTheme);
     if (cachedEnabled !== null) setEventEnabled(cachedEnabled === "true");
   }, []);
@@ -95,11 +95,11 @@ export default function UserPage() {
       footerRights: "መብቱ በህግ የተጠበቀ ነው።",
       tabs: {
         surprise: "የሰርፕራይዝ ጥቅል",
-        flower: "አበቦች",
-        direOnline: "ድሬ ገበያ"
+        decor: "ዲኮር", // Fixed typo here (was dicor)
+        goldenstore: "ጎልደን ገበያ"
       },
       subs: {
-        flower: {
+        decor: {
           all: "ሁሉም",
           wedding: "ሰርግ",
           shimigilina: "ሽምግልና",
@@ -107,11 +107,10 @@ export default function UserPage() {
           anniversery: "አንቨርሰሪ በዓል",
           graduation: "ምረቃ"
         },
-        direOnline: {
+        goldenstore: {
           all: "ሁሉም",
           mens: "ለወንድ",
           womans: "ለሴት",
-        
         },
         surprise: {
           all: "ሁሉም",
@@ -125,8 +124,8 @@ export default function UserPage() {
       },
       orderPhrases: {
         surprise: "ዌብሳይታችሁ ላይ ካየሁት አስገራሚ ፓኬጅ ውስጥ ይሄንን ማዘዝ እፈልጋለው",
-        flower: "ዌብሳይታችሁ ላይ ካየሁት የአበባ እቅፍ ውስጥ ይሄንን ማዘዝ እፈልጋለው",
-        direOnline: "ዌብሳይታችሁ ላይ ካየሁት የድሬ ኦንላይን ሽቶ ውስጥ ይሄንን ማዘዝ እፈልጋለው",
+        decor: "ዌብሳይታችሁ ላይ ካየሁት የዲኮር ስራ ውስጥ ይሄንን ማዘዝ እፈልጋለው", // Updated
+        goldenstore: "ዌብሳይታችሁ ላይ ካየሁት የጎልደን ገበያ እቃ ውስጥ ይሄንን ማዘዝ እፈልጋለው", // Updated
         default: "ዌብሳይታችሁ ላይ ካየሁት ፓኬጅ ውስጥ ይሄንን ማዘዝ እፈልጋለው"
       },
       callToAction: "አመሰግናለው"
@@ -144,11 +143,11 @@ export default function UserPage() {
       footerRights: "All rights reserved.",
       tabs: {
         surprise: "Surprise pkg",
-        flower: "Flowers",
-        direOnline: "Dire Online"
+        decor: "Decor",
+        goldenstore: "Golden Store"
       },
       subs: {
-        flower: {
+        decor: {
           all: "All",
           wedding: "For Wedding",
           shimigilina: "For Engagement",
@@ -156,7 +155,7 @@ export default function UserPage() {
           anniversery: "For Anniversary",
           graduation: "For Graduation"
         },
-        direOnline: {
+        goldenstore: {
           all: "All",
           mens: "For men",
           womans: "For woman",
@@ -173,8 +172,8 @@ export default function UserPage() {
       },
       orderPhrases: {
         surprise: "Hello, I would like to order this surprise package from your website:",
-        flower: "Hello, I would like to order this flower bouquet from your website:",
-        direOnline: "Hello, I would like to order this purfume from direOnline on your website:",
+        decor: "Hello, I would like to order this event decor from your website:",
+        goldenstore: "Hello, I would like to order this golden store item from your website:",
         default: "Hello, I would like to order this package from your website:"
       },
       callToAction: "Thank you"
@@ -192,11 +191,11 @@ export default function UserPage() {
       footerRights: "Mirgi hunduu eegamaadha.",
       tabs: {
         surprise: "surprisee",
-        flower: "Abaaboo",
-        direOnline: "diree online"
+        decor: "decoraa",
+        goldenstore: "ጎልደን ገበያ"
       },
       subs: {
-        flower: {
+        decor: {
           all: "Hunda",
           wedding: "Guyyaa Gaa'elaa",
           shimigilina: "Kadhannaa",
@@ -204,11 +203,10 @@ export default function UserPage() {
           anniversery: "Ayyaana Waggaa",
           graduation: "Eebbifa"
         },
-        direOnline: {
+        goldenstore: {
           all: "Hunda",
           mens: "Dhiira",
           womans: "Dubara",
-          
         },
         surprise: {
           all: "Hunda",
@@ -222,8 +220,8 @@ export default function UserPage() {
       },
       orderPhrases: {
         surprise: "Marsariitii keessan irraa paakajeetii dinqisiisaa kana ajajuu barbaada:",
-        flower: "Marsariitii keessan irraa abaaboo kana ajajuu barbaada:",
-        direOnline: "Akkam jirtu, marsariitii keessanirraa direOnline irraa urgooftuu kana ajajuun barbaada:",
+        decor: "Marsariitii keessan irraa decoraa kana ajajuu barbaada:",
+        goldenstore: "Akkam jirtu, marsariitii keessanirraa goldenstore irraa kana ajajuun barbaada:",
         default: "Marsariitii keessan irraa kana ajajuu barbaada:"
       },
       callToAction: "Galatoomaa"
@@ -272,8 +270,8 @@ export default function UserPage() {
 
         // Keep local cache synced with Firebase to prevent flash
         if (typeof window !== "undefined") {
-          localStorage.setItem("edom_theme_name", data.event || "none");
-          localStorage.setItem("edom_theme_enabled", data.enabled === true ? "true" : "false");
+          localStorage.setItem("golden_event_theme_name", data.event || "none");
+          localStorage.setItem("golden_event_theme_enabled", data.enabled === true ? "true" : "false");
         }
       },
       error => console.error("Event theme:", error)
@@ -293,12 +291,13 @@ export default function UserPage() {
     );
   }, []);
 
+  // Updated to match Golden Event categories
   const getDefaultSubCategories = (tab: string) => {
-    if (tab === "flower") {
+    if (tab === "decor") {
       return ["all", "wedding", "shimigilina", "birthday", "anniversery", "graduation"];
     }
 
-    if (tab === "direOnline") {
+    if (tab === "goldenstore") {
       return ["all", "mens", "womans"];
     }
 
@@ -410,7 +409,8 @@ export default function UserPage() {
       { merge: true }
     ).catch((err) => console.error("Error updating order metrics:", err));
 
-    const titlePrefix = p.type === "flower" ? "FLW" : "PKG";
+    // Updated prefixes for Golden Event
+    const titlePrefix = p.type === "decor" ? "DCR" : p.type === "goldenstore" ? "GLD" : "PKG";
     const temp = tempSubs.find((x) => x.id === p.subCategory);
     const categoryName = temp?.name?.[lang] || p.subCategory;
     const packageName = `${titlePrefix} ${index + 1} (${categoryName.toUpperCase()} - ${Number(
@@ -513,8 +513,9 @@ export default function UserPage() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-
-          {(["surprise", "flower", "direOnline"] as const).map((tab, index) => (
+          
+          {/* UPDATED TO MATCH NEW TABS */}
+          {(["surprise", "decor", "goldenstore"] as const).map((tab, index) => (
 
             <button
               key={`${tab}-${index}`}
@@ -600,7 +601,8 @@ export default function UserPage() {
 
             {products.map((p, index) => {
 
-              const title = p.type === "flower" ? "FLW" : "PKG";
+              // Updated prefixes for cards
+              const title = p.type === "decor" ? "DCR" : p.type === "goldenstore" ? "GLD" : "PKG";
 
               return (
 
@@ -621,7 +623,7 @@ export default function UserPage() {
                       alt={`${title} ${index + 1}`}
                     />
                     
-                    {/* Floating Label (PKG / FLW) */}
+                    {/* Floating Label (PKG / DCR / GLD) */}
                     <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-md z-10">
                       <span className="text-[10px] sm:text-xs text-white font-bold uppercase tracking-wider">
                         {title} {index + 1}
@@ -794,7 +796,8 @@ function GalleryView({
     setMain(product.images[0]);
   }, [product]);
 
-  const titlePrefix = product.type === "flower" ? "Flower Setup" : "Surprise Package";
+  // Updated Gallery title prefixes
+  const titlePrefix = product.type === "decor" ? "Event Decor" : product.type === "goldenstore" ? "Golden Store" : "Surprise Package";
 
   return (
     <>
@@ -807,20 +810,20 @@ function GalleryView({
       </button>
 
       {/* LEFT SIDE: Image Gallery */}
-      <div className="w-full md:w-1/2 flex flex-col bg-gray-50 border-b md:border-b-0 md:border-r border-gray-100">
+      <div className="w-full md:w-1/2 flex flex-col bg-[var(--brand-bg)] border-b md:border-b-0 md:border-r border-gray-800">
         
         {/* Main Image */}
         <div className="w-full h-[40vh] md:h-[60vh] relative flex items-center justify-center p-4 md:p-8">
           <img
             src={main}
-            className="w-full h-full object-contain drop-shadow-md"
+            className="w-full h-full object-contain drop-shadow-md rounded-lg"
             alt="Product view"
           />
         </div>
 
         {/* Thumbnails (Shows only if multiple images exist) */}
         {product.images.length > 1 && (
-          <div className="flex gap-3 justify-center overflow-x-auto p-4 bg-white/50 backdrop-blur-sm border-t border-gray-100">
+          <div className="flex gap-3 justify-center overflow-x-auto p-4 bg-black/20 backdrop-blur-sm border-t border-gray-800">
             {product.images.map((img, i) => (
               <button
                 key={`${img}-${i}`}
@@ -843,7 +846,7 @@ function GalleryView({
       <div className="w-full md:w-1/2 flex flex-col p-6 md:p-8 lg:p-10 max-h-[50vh] md:max-h-none overflow-y-auto">
         
         <div className="mb-6 pr-8">
-          <span className="inline-block px-3 py-1 bg-gray-100 text-[10px] md:text-xs font-black text-gray-500 uppercase tracking-widest rounded-md mb-3">
+          <span className="inline-block px-3 py-1 bg-gray-800 text-[10px] md:text-xs font-black text-gray-300 uppercase tracking-widest rounded-md mb-3">
             {titlePrefix}
           </span>
           <h2 className="text-3xl md:text-4xl font-black text-[var(--event-primary)] tracking-tight">
@@ -852,21 +855,21 @@ function GalleryView({
         </div>
 
         <div className="flex-1 mb-8">
-          <h3 className="text-sm font-bold text-gray-900 mb-2">Package Includes:</h3>
-          <p className="text-sm md:text-base text-gray-600 leading-relaxed whitespace-pre-wrap">
+          <h3 className="text-sm font-bold text-gray-200 mb-2">Package Includes:</h3>
+          <p className="text-sm md:text-base text-gray-400 leading-relaxed whitespace-pre-wrap">
             {product.description[lang] || product.description.en || product.description.am}
           </p>
         </div>
 
         {/* Order Action Button */}
-        <div className="mt-auto pt-6 border-t border-gray-100">
+        <div className="mt-auto pt-6 border-t border-gray-800">
           <button
             onClick={onOrder}
             disabled={isOrdering}
             className={`w-full py-3.5 md:py-4 text-sm md:text-base font-extrabold rounded-xl shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 ${
               isOrdering
                 ? "bg-amber-500 text-white"
-                : "bg-[var(--event-primary)] text-white hover:opacity-95"
+                : "bg-[var(--event-primary)] text-[var(--text-on-gold)] hover:opacity-95"
             }`}
           >
             {isOrdering ? successText : orderText}
