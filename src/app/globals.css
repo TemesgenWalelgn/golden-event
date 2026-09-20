@@ -1,29 +1,25 @@
 @import "tailwindcss";
 
-/* ===== ROOT COLORS ===== */
+/* =====================================================
+   ROOT COLORS (DARK LUXURY BASE)
+   ===================================================== */
 :root {
   /* ===== BRAND GOLD ===== */
   --brand-gold: #D4AF37;        /* Metallic Royal Gold */
   --brand-gold-light: #F3E5AB;  /* Champagne Gold Highlight */
   --brand-gold-dark: #997A15;   /* Antique Deep Bronze */
 
-  /* Legacy aliases mapped to dark theme */
-  --brand-green: #D4AF37;
-  --brand-teal: #E5C158;
-  --soft-green: #1E1E24;
-  --brand-light: #141417;       /* Dark card & header base */
-
   /* ===== DARK SURFACES ===== */
   --brand-bg: #0B0B0D;          /* Deep Obsidian Canvas */
   --surface-card: #141417;      /* Clean Elevated Cards */
   --surface-secondary: #1E1E24; /* Inputs / Pills / Subcategories */
-  --surface-hover: #26262E;      /* Hover background */
+  --surface-hover: #26262E;     /* Hover background */
 
   /* ===== TEXT ===== */
   --text-primary: #FFFFFF;      /* Crisp Heading White */
-  --text-secondary: #FFFFFF;    /* Pure White for Inactive Pills & Descriptions */
-  --text-muted: #E0E0E6;        /* Bright Muted Metadata */
-  --text-dark: #08080A;         /* Deepest black (fixes footer bg) */
+  --text-secondary: #C4C4CC;    /* Muted body text */
+  --text-muted: #7E7E8A;        /* Dimmed metadata */
+  --text-dark: #08080A;         /* Deepest black */
   --text-on-gold: #0B0B0D;      /* Text on gold buttons */
 
   /* ===== GLOBAL & BORDERS ===== */
@@ -32,7 +28,7 @@
   --border-subtle: #26262B;
   --border-gold: rgba(212, 175, 55, 0.45);
 
-  /* ===== EVENT THEME VARIABLES ===== */
+  /* ===== EVENT THEME VARIABLES (Default maps to Gold) ===== */
   --event-primary: var(--brand-gold);
   --event-secondary: var(--brand-gold-light);
   --event-accent: var(--brand-gold-dark);
@@ -46,277 +42,137 @@ footer {
   border-color: #1F1F24 !important;
 }
 
-/* ===== SUBCATEGORY MENU PILLS (USER PAGE & ADMIN PAGE) ===== */
-
-/* 1. Inactive subcategory buttons: Dark background, pure white text */
-.overflow-x-auto button:not([class*="bg-[var(--text-dark)]"]):not([class*="bg-[var(--brand-green)]"]):not([class*="bg-amber-100"]) {
-  background-color: var(--surface-secondary) !important;
-  color: #FFFFFF !important;
-  border-color: var(--border-subtle) !important;
-  opacity: 1 !important;
-}
-
-/* 2. Inactive button hover: Dark hover surface, text turns gold */
-.overflow-x-auto button:not([class*="bg-[var(--text-dark)]"]):not([class*="bg-[var(--brand-green)]"]):not([class*="bg-amber-100"]):hover {
-  background-color: var(--surface-hover) !important;
-  color: var(--brand-gold) !important;
-  border-color: var(--border-gold) !important;
-}
-
-/* 3. Active menu button (Default state): Solid gold background, dark text */
-.overflow-x-auto button[class*="bg-[var(--text-dark)]"],
-.overflow-x-auto button[class*="bg-[var(--brand-green)]"] {
-  background-color: var(--brand-gold) !important;
-  color: var(--text-on-gold) !important;
-  border-color: var(--brand-gold) !important;
-  box-shadow: 0 0 14px var(--event-glow) !important;
-}
-
-/* 4. Active menu button HOVER: Brighter champagne gold background + glow */
-.overflow-x-auto button[class*="bg-[var(--text-dark)]"]:hover,
-.overflow-x-auto button[class*="bg-[var(--brand-green)]"]:hover {
-  background-color: var(--brand-gold-light) !important;
-  color: #000000 !important;
-  border-color: var(--brand-gold-light) !important;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.45) !important;
-}
-
-/* ===== CARD DESCRIPTIONS (FORCE WHITE) ===== */
-.theme-card p.line-clamp-3,
-.theme-card p[class*="text-gray-500"],
-.theme-card p.italic {
-  color: #FFFFFF !important;
-  opacity: 0.95;
-}
-
-/* Card package tags (Pkg 1, Pkg 2, etc.) */
-.theme-card span.tracking-widest {
-  color: #E0E0E6 !important;
-}
-
-/* ===== SORT DROPDOWN STYLING ===== */
-select[title="Sort package list"] {
-  background-color: var(--surface-secondary) !important;
-  color: #FFFFFF !important;
-  border-color: var(--border-subtle) !important;
-}
 /* =====================================================
-   EVENT THEMES
-   ===================================================== */
-
-/* 🇪🇹 Ethiopian New Year */
-.theme-newyear {
-    --brand-green: #176b4d;
-    --brand-gold: #e1ad3d;
-    --brand-teal: #16866e;
-    --soft-green: #fff8df;
-
-    --brand-bg: linear-gradient(
-        135deg,
-        #f7fff9,
-        #fff9e8,
-        #f1fbf5
-    );
-
-    --event-primary: #176b4d;
-    --event-secondary: #e1ad3d;
-    --event-accent: #16866e;
-    --event-soft: #fff8df;
-    --event-glow: rgba(225, 173, 61, 0.25);
-}
-
-/* ❤️ Valentine's Day */
-.theme-valentine {
-    --brand-green: #8e1736;
-    --brand-gold: #d84a6a;
-    --brand-teal: #b92f52;
-    --soft-green: #fff1f5;
-
-    --brand-bg: linear-gradient(
-        135deg,
-        #fff5f7,
-        #ffe8ef,
-        #ffffff
-    );
-
-    --event-primary: #8e1736;
-    --event-secondary: #d84a6a;
-    --event-accent: #f19ab0;
-    --event-soft: #fff1f5;
-    --event-glow: rgba(216, 74, 106, 0.25);
-}
-
-/* 🎄 Christmas */
-.theme-christmas {
-    --brand-green: #12613e;
-    --brand-gold: #d4a638;
-    --brand-teal: #1b8158;
-    --soft-green: #f0faf4;
-
-    --brand-bg: linear-gradient(
-        135deg,
-        #f3fbf5,
-        #fff8e5,
-        #fff3f3
-    );
-
-    --event-primary: #12613e;
-    --event-secondary: #d4a638;
-    --event-accent: #b72d35;
-    --event-soft: #f0faf4;
-    --event-glow: rgba(212, 166, 56, 0.25);
-}
-
-/* ☪️ Muslim Holy Days */
-.theme-muslim {
-    --brand-green: #086b55;
-    --brand-gold: #d5aa45;
-    --brand-teal: #168d73;
-    --soft-green: #f1faf5;
-
-    --brand-bg: linear-gradient(
-        135deg,
-        #f1faf5,
-        #fff9e8,
-        #eef8f4
-    );
-
-    --event-primary: #086b55;
-    --event-secondary: #d5aa45;
-    --event-accent: #168d73;
-    --event-soft: #f1faf5;
-    --event-glow: rgba(213, 170, 69, 0.25);
-}
-
-/* 👔 Father's Day */
-.theme-fathers {
-    --brand-green: #183b63;
-    --brand-gold: #c9a447;
-    --brand-teal: #3675a8;
-    --soft-green: #eef5fb;
-
-    --brand-bg: linear-gradient(
-        135deg,
-        #f1f6fb,
-        #eaf1f8,
-        #fff9e9
-    );
-
-    --event-primary: #183b63;
-    --event-secondary: #c9a447;
-    --event-accent: #3675a8;
-    --event-soft: #eef5fb;
-    --event-glow: rgba(54, 117, 168, 0.25);
-}
-
-/* 🌷 Mother's Day */
-.theme-mothers {
-    --brand-green: #a32f61;
-    --brand-gold: #d5a45a;
-    --brand-teal: #c44d7d;
-    --soft-green: #fff2f7;
-
-    --brand-bg: linear-gradient(
-        135deg,
-        #fff5f8,
-        #fff0f5,
-        #fff9ed
-    );
-
-    --event-primary: #a32f61;
-    --event-secondary: #d5a45a;
-    --event-accent: #c44d7d;
-    --event-soft: #fff2f7;
-    --event-glow: rgba(228, 124, 163, 0.25);
-}
-
-/* =====================================================
-   TAILWIND THEME
+   TAILWIND THEME & DARK MODE ENFORCEMENT
    ===================================================== */
 
 @theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
-
-/* =====================================================
-   DARK MODE
-   ===================================================== */
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
-    }
+  :root {
+    --background: #0B0B0D;
+    --foreground: #FFFFFF;
+  }
 }
-
-/* =====================================================
-   BODY
-   ===================================================== */
 
 body {
-    margin: 0;
-    background: var(--brand-bg);
-    color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
-    transition: background 0.6s ease, color 0.4s ease;
+  margin: 0;
+  background: var(--brand-bg);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background 0.6s ease, color 0.4s ease;
 }
 
 /* =====================================================
-   EVENT BACKGROUND
+   SEASONAL EVENT THEMES (TINTED LUXURY DARK MODE)
+   ===================================================== */
+
+/* 🇪🇹 Ethiopian New Year (Deep Emerald Obsidian) */
+.theme-newyear {
+  --brand-gold: #e1ad3d;
+  --brand-gold-light: #fbe69b;
+  --brand-bg: #050F0A; 
+  --surface-card: #0A1710;
+  --surface-secondary: #102117;
+  --border-subtle: #162E20;
+
+  --event-primary: #176b4d;
+  --event-secondary: #e1ad3d;
+  --event-accent: #16866e;
+  --event-glow: rgba(23, 107, 77, 0.3);
+}
+
+/* ❤️ Valentine's Day (Deep Ruby Obsidian) */
+.theme-valentine {
+  --brand-gold: #d84a6a;
+  --brand-gold-light: #f19ab0;
+  --brand-bg: #120508;
+  --surface-card: #1A090D;
+  --surface-secondary: #241015;
+  --border-subtle: #33151D;
+
+  --event-primary: #d84a6a;
+  --event-secondary: #f19ab0;
+  --event-accent: #8e1736;
+  --event-glow: rgba(216, 74, 106, 0.3);
+}
+
+/* 🎄 Christmas (Deep Pine Obsidian) */
+.theme-christmas {
+  --brand-gold: #d4a638;
+  --brand-gold-light: #f1cb75;
+  --brand-bg: #050C08;
+  --surface-card: #0A140F;
+  --surface-secondary: #0F1F16;
+  --border-subtle: #14291D;
+
+  --event-primary: #1b8158;
+  --event-secondary: #d4a638;
+  --event-accent: #b72d35;
+  --event-glow: rgba(27, 129, 88, 0.3);
+}
+
+/* ☪️ Muslim Holy Days (Deep Teal Obsidian) */
+.theme-muslim {
+  --brand-gold: #d5aa45;
+  --brand-gold-light: #f3d485;
+  --brand-bg: #040D0B;
+  --surface-card: #081714;
+  --surface-secondary: #0D241E;
+  --border-subtle: #123028;
+
+  --event-primary: #168d73;
+  --event-secondary: #d5aa45;
+  --event-accent: #086b55;
+  --event-glow: rgba(22, 141, 115, 0.3);
+}
+
+/* 👔 Father's Day (Deep Sapphire Obsidian) */
+.theme-fathers {
+  --brand-gold: #c9a447;
+  --brand-gold-light: #ebd088;
+  --brand-bg: #050812;
+  --surface-card: #0A0F1A;
+  --surface-secondary: #101624;
+  --border-subtle: #182233;
+
+  --event-primary: #3675a8;
+  --event-secondary: #c9a447;
+  --event-accent: #183b63;
+  --event-glow: rgba(54, 117, 168, 0.3);
+}
+
+/* 🌷 Mother's Day (Deep Rose Obsidian) */
+.theme-mothers {
+  --brand-gold: #d5a45a;
+  --brand-gold-light: #f3ce95;
+  --brand-bg: #12050A;
+  --surface-card: #1A090F;
+  --surface-secondary: #241017;
+  --border-subtle: #331521;
+
+  --event-primary: #c44d7d;
+  --event-secondary: #d5a45a;
+  --event-accent: #a32f61;
+  --event-glow: rgba(196, 77, 125, 0.3);
+}
+
+/* =====================================================
+   EVENT BACKGROUND ANIMATION
    ===================================================== */
 
 .theme-page {
-    min-height: 100vh;
-
-    background:
-        radial-gradient(
-            circle at 10% 10%,
-            var(--event-glow),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 90% 90%,
-            var(--event-glow),
-            transparent 25%
-        ),
-        var(--brand-bg);
-
-    transition: background 0.8s ease;
-}
-
-/* =====================================================
-   EVENT BUTTON / GRADIENT
-   ===================================================== */
-
-.theme-gradient {
-    background: linear-gradient(
-        135deg,
-        var(--event-primary),
-        var(--event-accent),
-        var(--event-secondary)
-    );
-}
-
-.theme-button {
-    background: linear-gradient(
-        135deg,
-        var(--event-primary),
-        var(--event-accent)
-    );
-
-    color: white;
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.theme-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--event-glow);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 10%, var(--event-glow), transparent 28%),
+    radial-gradient(circle at 90% 90%, var(--event-glow), transparent 25%),
+    var(--brand-bg);
+  transition: background 0.8s ease;
 }
 
 /* =====================================================
@@ -324,15 +180,13 @@ body {
    ===================================================== */
 
 .theme-card {
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        border-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .theme-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px var(--event-glow);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px var(--event-glow);
+  border-color: var(--event-primary);
 }
 
 /* =====================================================
@@ -340,145 +194,60 @@ body {
    ===================================================== */
 
 @keyframes themeFade {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes themeGlow {
-    0%,
-    100% {
-        box-shadow: 0 0 8px var(--event-glow);
-    }
-    50% {
-        box-shadow: 0 0 25px var(--event-glow);
-    }
-}
-
-@keyframes themeFloat {
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-5px);
-    }
-}
-
-@keyframes themeShine {
-    0% {
-        background-position: -200% center;
-    }
-    100% {
-        background-position: 200% center;
-    }
-}
-
-/* Custom Particle Keyframes */
 @keyframes particleFall {
-    0% {
-        transform: translateY(-10vh) rotate(0deg);
-        opacity: 0;
-    }
-    10% {
-        opacity: 0.8;
-    }
-    90% {
-        opacity: 0.8;
-    }
-    100% {
-        transform: translateY(110vh) rotate(360deg);
-        opacity: 0;
-    }
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
 @keyframes particleSway {
-    0%, 100% {
-        margin-left: 0;
-    }
-    50% {
-        margin-left: 50px;
-    }
+  0%, 100% { margin-left: 0; }
+  50% { margin-left: 50px; }
 }
 
 .theme-animate {
-    animation: themeFade 0.6s ease both;
-}
-
-.theme-glow {
-    animation: themeGlow 3s ease-in-out infinite;
-}
-
-.theme-float {
-    animation: themeFloat 3s ease-in-out infinite;
-}
-
-.theme-shine {
-    background: linear-gradient(
-        110deg,
-        var(--event-primary) 35%,
-        var(--event-secondary) 50%,
-        var(--event-primary) 65%
-    );
-    background-size: 200% 100%;
-    animation: themeShine 4s linear infinite;
+  animation: themeFade 0.6s ease both;
 }
 
 /* =====================================================
-   DYNAMIC THEME PARTICLES (MULTIPLE EMOJIS)
+   DYNAMIC THEME PARTICLES
    ===================================================== */
 
 .event-particles {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    overflow: hidden;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
 }
 
-/* Base style for all falling spans */
 .event-particles span {
-    position: absolute;
-    top: -50px;
-    font-size: 24px;
-    opacity: 0;
-    animation: particleFall 8s linear infinite, particleSway 4s ease-in-out infinite alternate;
+  position: absolute;
+  top: -50px;
+  font-size: 24px;
+  opacity: 0;
+  animation: particleFall 8s linear infinite, particleSway 4s ease-in-out infinite alternate;
 }
 
 /* 🇪🇹 New Year (Adey Abeba) */
-.theme-newyear .event-particles span::after {
-    content: "🌼";
-    filter: drop-shadow(0 0 5px rgba(225, 173, 61, 0.4));
-}
+.theme-newyear .event-particles span::after { content: "🌼"; filter: drop-shadow(0 0 5px rgba(225, 173, 61, 0.4)); }
 
 /* ❤️ Valentine's Day (Hearts) */
-.theme-valentine .event-particles span::after {
-    content: "❤️";
-    filter: drop-shadow(0 0 5px rgba(216, 74, 106, 0.4));
-}
+.theme-valentine .event-particles span::after { content: "❤️"; filter: drop-shadow(0 0 5px rgba(216, 74, 106, 0.4)); }
 
 /* 🎄 Christmas (Snowflakes) */
-.theme-christmas .event-particles span::after {
-    content: "❄️";
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
-}
+.theme-christmas .event-particles span::after { content: "❄️"; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); }
 
 /* ☪️ Muslim Holy Days (Mix of Moons and Stars) */
-.theme-muslim .event-particles span::after {
-    content: "🌙";
-    color: #d5aa45;
-    filter: drop-shadow(0 0 5px rgba(213, 170, 69, 0.6));
-}
-.theme-muslim .event-particles span:nth-child(even)::after {
-    content: "⭐"; /* Every second emoji is a star */
-}
+.theme-muslim .event-particles span::after { content: "🌙"; color: #d5aa45; filter: drop-shadow(0 0 5px rgba(213, 170, 69, 0.6)); }
+.theme-muslim .event-particles span:nth-child(even)::after { content: "⭐"; }
 
-/* Randomize horizontal positions, delays, and sizes for the 15 spans */
+/* Particle Positions */
 .event-particles span:nth-child(1) { left: 5%; animation-delay: 0s, 0s; animation-duration: 20s, 4s; }
 .event-particles span:nth-child(2) { left: 15%; animation-delay: 2s, 1s; animation-duration: 15s, 3s; font-size: 18px; }
 .event-particles span:nth-child(3) { left: 25%; animation-delay: 4s, 2s; animation-duration: 10s, 5s; }
@@ -498,14 +267,11 @@ body {
 /* =====================================================
    ACCESSIBILITY
    ===================================================== */
-
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-    }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
