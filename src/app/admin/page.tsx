@@ -67,8 +67,8 @@ export default function AdminDashboard() {
   const [savingEventTheme, setSavingEventTheme] = useState(false);
   const [showEventPanel, setShowEventPanel] = useState(false);
 
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "golden-event";
-  const uploadPreset = siteConfig.uploadPreset || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "golden-event";
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dmp2grjb1";
+  const uploadPreset = siteConfig.uploadPreset || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "golden_event";
 
   // Use English translations as the default base for Admin UI
   const tAdmin = siteConfig.translations.en;
