@@ -90,7 +90,8 @@ body {
   --event-accent: #16866e;
   --event-glow: rgba(23, 107, 77, 0.15);
 }
-.dark .theme-newyear {
+/* No spaces between .dark and .theme-newyear */
+.dark.theme-newyear {
   --brand-bg: #050F0A; 
   --surface-card: #0A1710;
   --surface-secondary: #102117;
@@ -111,7 +112,7 @@ body {
   --event-accent: #f19ab0;
   --event-glow: rgba(216, 74, 106, 0.15);
 }
-.dark .theme-valentine {
+.dark.theme-valentine {
   --brand-bg: #120508;
   --surface-card: #1A090D;
   --surface-secondary: #241015;
@@ -132,7 +133,7 @@ body {
   --event-accent: #b72d35;
   --event-glow: rgba(18, 97, 62, 0.15);
 }
-.dark .theme-christmas {
+.dark.theme-christmas {
   --brand-bg: #050C08;
   --surface-card: #0A140F;
   --surface-secondary: #0F1F16;
@@ -153,7 +154,7 @@ body {
   --event-accent: #168d73;
   --event-glow: rgba(8, 107, 85, 0.15);
 }
-.dark .theme-muslim {
+.dark.theme-muslim {
   --brand-bg: #040D0B;
   --surface-card: #081714;
   --surface-secondary: #0D241E;
@@ -174,7 +175,7 @@ body {
   --event-accent: #3675a8;
   --event-glow: rgba(24, 59, 99, 0.15);
 }
-.dark .theme-fathers {
+.dark.theme-fathers {
   --brand-bg: #050812;
   --surface-card: #0A0F1A;
   --surface-secondary: #101624;
@@ -195,7 +196,7 @@ body {
   --event-accent: #c44d7d;
   --event-glow: rgba(163, 47, 97, 0.15);
 }
-.dark .theme-mothers {
+.dark.theme-mothers {
   --brand-bg: #12050A;
   --surface-card: #1A090F;
   --surface-secondary: #241017;
