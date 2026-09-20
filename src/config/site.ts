@@ -24,7 +24,7 @@ export const siteConfig = {
   // 3. CONTACT & SOCIAL MEDIA
   telegramUsername: "Golden_surprise",
   telegramChannel: "https://t.me/goldenstorediredawa",
-  tiktokUrl: "https://tiktok.com/goldensurpriseanddecor",
+  tiktokUrl: "https://tiktok.com/@goldensurpriseanddecor",
   instagramUrl: "https://instagram.com/goldensurpriseanddecor",
   phoneDisplay: "+251 978 727 648",
   phoneRaw: "+251978727648",
