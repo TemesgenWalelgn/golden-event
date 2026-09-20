@@ -58,6 +58,8 @@ export default function AdminDashboard() {
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [editingTempId, setEditingTempId] = useState<string | null>(null);
 
+  // ===== THEME STATES =====
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [eventTheme, setEventTheme] = useState("none");
   const [eventEnabled, setEventEnabled] = useState(false);
   const [eventAnimation, setEventAnimation] = useState(true);
@@ -92,12 +94,24 @@ export default function AdminDashboard() {
     });
   }, [isAuthenticated]);
 
+  // Load Theme Preferences
   useEffect(() => {
+    const cachedDark = localStorage.getItem(`${siteConfig.storagePrefix}_dark_mode`);
+    if (cachedDark !== null) {
+      setIsDarkMode(cachedDark === "true");
+    }
+
     const cachedTheme = localStorage.getItem(`${siteConfig.storagePrefix}_theme_name`);
     const cachedEnabled = localStorage.getItem(`${siteConfig.storagePrefix}_theme_enabled`);
     if (cachedTheme) setEventTheme(cachedTheme);
     if (cachedEnabled !== null) setEventEnabled(cachedEnabled === "true");
   }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem(`${siteConfig.storagePrefix}_dark_mode`, String(newMode));
+  };
 
   const [subCategoryOrder, setSubCategoryOrder] = useState<Record<string, string[]>>({});
   const [draggedSub, setDraggedSub] = useState<string | null>(null);
@@ -139,11 +153,6 @@ export default function AdminDashboard() {
       const data = snapshot.data();
       setEventTheme(data.event || "none"); setEventEnabled(data.enabled === true);
       setEventAnimation(data.animation !== false); setEventParticles(data.particles === true);
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem(`${siteConfig.storagePrefix}_theme_name`, data.event || "none");
-        localStorage.setItem(`${siteConfig.storagePrefix}_theme_enabled`, data.enabled === true ? "true" : "false");
-      }
     });
   }, [isAuthenticated]);
 
@@ -154,7 +163,6 @@ export default function AdminDashboard() {
     });
   }, [isAuthenticated]);
 
-  // Dynamic Subcategories driven entirely by siteConfig
   const getSubCategoriesForTab = (tab: string) => {
     const configTab = siteConfig.tabs.find(t => t.id === tab);
     const normal = configTab ? configTab.defaultSubs : ["all"];
@@ -211,7 +219,6 @@ export default function AdminDashboard() {
       if (targetTempSub) {
         targetTabType = targetTempSub.type;
       } else {
-        // Find which hardcoded config tab owns this subcategory
         const owningTab = siteConfig.tabs.find(t => t.defaultSubs.includes(copyTargetSub));
         if (owningTab) targetTabType = owningTab.id;
       }
@@ -350,13 +357,13 @@ export default function AdminDashboard() {
   const conversionRate = analytics.totalPageViews > 0 ? ((analytics.totalOrdersClicked / analytics.totalPageViews) * 100).toFixed(1) : "0.0";
 
   return (
-    <div suppressHydrationWarning className={`min-h-screen ${eventEnabled && eventTheme !== "none" ? `theme-${eventTheme}` : ""} theme-page flex flex-col justify-between`}>
+    <div suppressHydrationWarning className={`min-h-screen ${isDarkMode ? "dark" : ""} ${eventEnabled && eventTheme !== "none" ? `theme-${eventTheme}` : ""} theme-page flex flex-col justify-between transition-colors duration-300`}>
       {eventEnabled && eventParticles && (
         <div className="event-particles">{[...Array(15)].map((_, i) => <span key={i}></span>)}</div>
       )}
 
       {/* ===== HEADER ===== */}
-      <header className="bg-[var(--surface-card)] border-b border-[var(--border-subtle)] shadow-sm sticky top-0 z-40">
+      <header className="bg-[var(--surface-card)] border-b border-[var(--border-subtle)] shadow-sm sticky top-0 z-40 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 h-16 md:h-20 flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-lg md:text-2xl font-black text-[var(--brand-gold)] tracking-tight">Admin Portal</span>
@@ -364,11 +371,20 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowEventPanel(!showEventPanel)} className="px-3.5 py-2 bg-[var(--surface-secondary)] text-white border border-[var(--border-subtle)] text-xs md:text-sm font-bold rounded-full hover:bg-[var(--surface-hover)] transition-all">
+            {/* DARK MODE TOGGLE */}
+            <button 
+              onClick={toggleDarkMode} 
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[var(--surface-secondary)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--brand-gold)] transition-colors" 
+              title="Toggle Theme"
+            >
+              {isDarkMode ? "🌞" : "🌙"}
+            </button>
+
+            <button onClick={() => setShowEventPanel(!showEventPanel)} className="px-3.5 py-2 bg-[var(--surface-secondary)] text-[var(--text-primary)] border border-[var(--border-subtle)] text-xs md:text-sm font-bold rounded-full hover:bg-[var(--surface-hover)] transition-all">
               🎨 <span className="hidden sm:inline">Event Theme</span>
             </button>
 
-            <button onClick={() => { resetTempForm(); setShowConfigModal(true); }} className="px-3.5 py-2 bg-[var(--surface-secondary)] text-white border border-[var(--border-subtle)] text-xs md:text-sm font-bold rounded-full hover:bg-[var(--surface-hover)] transition-all flex items-center gap-1.5" title="Configure Temporary Packages">
+            <button onClick={() => { resetTempForm(); setShowConfigModal(true); }} className="px-3.5 py-2 bg-[var(--surface-secondary)] text-[var(--text-primary)] border border-[var(--border-subtle)] text-xs md:text-sm font-bold rounded-full hover:bg-[var(--surface-hover)] transition-all flex items-center gap-1.5" title="Configure Temporary Packages">
               <Settings size={16} />
               <span className="hidden sm:inline">Temp Setup</span>
             </button>
@@ -380,12 +396,12 @@ export default function AdminDashboard() {
             )}
 
             {isAdding && (
-              <button onClick={() => { setIsAdding(false); setEditingId(null); setProduct(getInitialFormState()); }} className="px-4 py-2 bg-[var(--surface-secondary)] text-white text-xs md:text-sm font-bold rounded-full hover:bg-[var(--surface-hover)] transition-all">
+              <button onClick={() => { setIsAdding(false); setEditingId(null); setProduct(getInitialFormState()); }} className="px-4 py-2 bg-[var(--surface-secondary)] text-[var(--text-primary)] text-xs md:text-sm font-bold rounded-full hover:bg-[var(--surface-hover)] transition-all">
                 Back to Dashboard
               </button>
             )}
 
-            <button onClick={() => signOut(auth)} className="px-4 py-2 bg-red-900/50 text-red-300 text-xs md:text-sm font-bold rounded-full hover:bg-red-900 transition-all ml-1 md:ml-2">
+            <button onClick={() => signOut(auth)} className="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 border border-transparent dark:border-red-900/30 text-xs md:text-sm font-bold rounded-full transition-all ml-1 md:ml-2">
               Logout
             </button>
           </div>
@@ -394,20 +410,20 @@ export default function AdminDashboard() {
 
       {/* ===== EVENT THEME PANEL ===== */}
       {showEventPanel && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl transition-colors">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-xl font-black text-[var(--text-primary)]">🎨 Event Theme</h2>
                 <p className="text-xs text-[var(--text-muted)] mt-1">Control the seasonal design on both pages.</p>
               </div>
-              <button onClick={() => setShowEventPanel(false)} className="text-[var(--text-muted)] hover:text-white font-bold text-lg">✕</button>
+              <button onClick={() => setShowEventPanel(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-lg">✕</button>
             </div>
 
             <div className="space-y-4">
               <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border-subtle)] cursor-pointer">
                 <div>
-                  <p className="text-sm font-bold text-white">Event Theme</p>
+                  <p className="text-sm font-bold text-[var(--text-primary)]">Event Theme</p>
                   <p className="text-[10px] text-[var(--text-muted)]">Turn seasonal design on or off</p>
                 </div>
                 <input type="checkbox" checked={eventEnabled} onChange={(e) => setEventEnabled(e.target.checked)} className="w-5 h-5 accent-[var(--brand-gold)]" />
@@ -415,7 +431,7 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Choose Event</label>
-                <select value={eventTheme} onChange={(e) => setEventTheme(e.target.value)} className="w-full p-3 border border-[var(--border-subtle)] rounded-xl text-sm bg-[var(--brand-bg)] text-white outline-none">
+                <select value={eventTheme} onChange={(e) => setEventTheme(e.target.value)} className="w-full p-3 border border-[var(--border-subtle)] rounded-xl text-sm bg-[var(--brand-bg)] text-[var(--text-primary)] outline-none">
                   <option value="none">Normal Default Theme</option>
                   <option value="newyear">🇪🇹 Ethiopian New Year</option>
                   <option value="valentine">❤️ Valentine's Day</option>
@@ -427,12 +443,12 @@ export default function AdminDashboard() {
               </div>
 
               <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border-subtle)] cursor-pointer">
-                <span className="text-sm font-bold text-white">✨ Animations</span>
+                <span className="text-sm font-bold text-[var(--text-primary)]">✨ Animations</span>
                 <input type="checkbox" checked={eventAnimation} onChange={(e) => setEventAnimation(e.target.checked)} className="w-5 h-5 accent-[var(--brand-gold)]" />
               </label>
 
               <label className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-secondary)] border border-[var(--border-subtle)] cursor-pointer">
-                <span className="text-sm font-bold text-white">✨ Background Effects</span>
+                <span className="text-sm font-bold text-[var(--text-primary)]">✨ Background Effects</span>
                 <input type="checkbox" checked={eventParticles} onChange={(e) => setEventParticles(e.target.checked)} className="w-5 h-5 accent-[var(--brand-gold)]" />
               </label>
 
@@ -444,38 +460,34 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ===== TEMPORARY SUBCATEGORY CONFIGURATION MODAL ===== */}
+      {/* ===== TEMPORARY SUBCATEGORY MODAL ===== */}
       {showConfigModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto transition-colors">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-xl font-black text-[var(--text-primary)]">Temporary Packages</h2>
                 <p className="text-xs text-[var(--text-muted)] mt-1">Create as many temporary subcategories as you need.</p>
               </div>
-              <button onClick={() => { setShowConfigModal(false); resetTempForm(); }} className="text-[var(--text-muted)] hover:text-white font-bold text-lg">✕</button>
+              <button onClick={() => { setShowConfigModal(false); resetTempForm(); }} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-lg">✕</button>
             </div>
 
             <div className="p-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)] mb-6">
               <h3 className="font-extrabold text-sm text-[var(--brand-gold)] mb-4">{editingTempId ? "Edit Temporary Subcategory" : "Create New Temporary Subcategory"}</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                <select value={tempForm.type} onChange={(e) => setTempForm((prev) => ({ ...prev, type: e.target.value }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium">
-                  {siteConfig.tabs.map(tab => (
-                    <option key={tab.id} value={tab.id}>{(tAdmin.tabs as any)[tab.id] || tab.id}</option>
-                  ))}
+                <select value={tempForm.type} onChange={(e) => setTempForm((prev) => ({ ...prev, type: e.target.value }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-[var(--text-primary)] outline-none font-medium">
+                  {siteConfig.tabs.map(tab => ( <option key={tab.id} value={tab.id}>{(tAdmin.tabs as any)[tab.id] || tab.id}</option> ))}
                 </select>
-
-                <input type="text" placeholder="Name (AM)" value={tempForm.name.am} onChange={(e) => setTempForm((prev) => ({ ...prev, name: { ...prev.name, am: e.target.value } }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium" />
-                <input type="text" placeholder="Name (EN)" value={tempForm.name.en} onChange={(e) => setTempForm((prev) => ({ ...prev, name: { ...prev.name, en: e.target.value } }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium" />
+                <input type="text" placeholder="Name (AM)" value={tempForm.name.am} onChange={(e) => setTempForm((prev) => ({ ...prev, name: { ...prev.name, am: e.target.value } }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-[var(--text-primary)] outline-none font-medium" />
+                <input type="text" placeholder="Name (EN)" value={tempForm.name.en} onChange={(e) => setTempForm((prev) => ({ ...prev, name: { ...prev.name, en: e.target.value } }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-[var(--text-primary)] outline-none font-medium" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input type="text" placeholder="Name (OM)" value={tempForm.name.om} onChange={(e) => setTempForm((prev) => ({ ...prev, name: { ...prev.name, om: e.target.value } }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-white outline-none font-medium" />
-
+                <input type="text" placeholder="Name (OM)" value={tempForm.name.om} onChange={(e) => setTempForm((prev) => ({ ...prev, name: { ...prev.name, om: e.target.value } }))} className="p-3 border border-[var(--border-subtle)] rounded-xl text-xs bg-[var(--brand-bg)] text-[var(--text-primary)] outline-none font-medium" />
                 <label className="flex items-center gap-3 p-3 bg-[var(--brand-bg)] rounded-xl border border-[var(--border-subtle)] cursor-pointer">
                   <input type="checkbox" checked={tempForm.enabled} onChange={(e) => setTempForm((prev) => ({ ...prev, enabled: e.target.checked }))} className="w-4 h-4 accent-[var(--brand-gold)]" />
-                  <span className="text-xs font-bold text-gray-300">Visible to customers</span>
+                  <span className="text-xs font-bold text-[var(--text-secondary)]">Visible to customers</span>
                 </label>
               </div>
 
@@ -483,9 +495,7 @@ export default function AdminDashboard() {
                 <button onClick={saveTempSubCategory} className="flex-1 py-3 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition-all">
                   {editingTempId ? "Update" : "Add Temporary Package"}
                 </button>
-                {editingTempId && (
-                  <button onClick={resetTempForm} className="px-4 py-3 bg-gray-700 text-white rounded-xl font-bold text-sm hover:bg-gray-600 transition-all">New</button>
-                )}
+                {editingTempId && ( <button onClick={resetTempForm} className="px-4 py-3 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white rounded-xl font-bold text-sm hover:opacity-80 transition-all">New</button> )}
               </div>
             </div>
 
@@ -499,20 +509,17 @@ export default function AdminDashboard() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-black text-sm text-[var(--brand-gold)]">{temp.name.en || temp.name.am || temp.name.om || "Unnamed"}</span>
-                        <span className="text-[10px] uppercase font-bold px-2 py-1 rounded-full bg-[var(--brand-bg)] text-white border border-[var(--border-subtle)]">{temp.type}</span>
-                        <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${temp.enabled ? "bg-green-900/50 text-green-400 border border-green-800" : "bg-gray-800 text-gray-400 border border-gray-700"}`}>
-                          {temp.enabled ? "Visible" : "Hidden"}
-                        </span>
+                        <span className="text-[10px] uppercase font-bold px-2 py-1 rounded-full bg-[var(--brand-bg)] text-[var(--text-secondary)] border border-[var(--border-subtle)]">{temp.type}</span>
                       </div>
                       <p className="text-[11px] text-[var(--text-muted)] mt-1">AM: {temp.name.am || "-"} · OM: {temp.name.om || "-"}</p>
                     </div>
 
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <button onClick={() => toggleTempSubCategory(temp)} className={`px-3 py-2 rounded-xl text-xs font-bold ${temp.enabled ? "bg-amber-900/50 text-amber-400 hover:bg-amber-900/80" : "bg-green-900/50 text-green-400 hover:bg-green-900/80"}`}>
+                      <button onClick={() => toggleTempSubCategory(temp)} className={`px-3 py-2 rounded-xl text-xs font-bold ${temp.enabled ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400" : "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400"}`}>
                         {temp.enabled ? "Disable" : "Enable"}
                       </button>
-                      <button onClick={() => openTempConfigForEdit(temp)} className="p-2 bg-blue-900/30 text-blue-400 rounded-xl hover:bg-blue-900/60" title="Edit"><Pencil size={14} /></button>
-                      <button onClick={() => deleteTempSubCategory(temp.id)} className="p-2 bg-red-900/30 text-red-400 rounded-xl hover:bg-red-900/60" title="Delete"><Trash2 size={14} /></button>
+                      <button onClick={() => openTempConfigForEdit(temp)} className="p-2 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-xl hover:opacity-80" title="Edit"><Pencil size={14} /></button>
+                      <button onClick={() => deleteTempSubCategory(temp.id)} className="p-2 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 rounded-xl hover:opacity-80" title="Delete"><Trash2 size={14} /></button>
                     </div>
                   </div>
                 ))
@@ -524,14 +531,13 @@ export default function AdminDashboard() {
 
       {/* ===== DUPLICATE PACKAGE MODAL ===== */}
       {copyingProduct && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] w-full max-w-md rounded-3xl p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] w-full max-w-md rounded-3xl p-6 shadow-2xl transition-colors">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-xl font-black text-[var(--text-primary)]">Duplicate Package</h2>
-                <p className="text-xs text-[var(--text-muted)] mt-1">Copy this package to another subcategory.</p>
               </div>
-              <button onClick={() => { setCopyingProduct(null); setCopyTargetSub(""); }} className="text-[var(--text-muted)] hover:text-white font-bold text-lg">✕</button>
+              <button onClick={() => { setCopyingProduct(null); setCopyTargetSub(""); }} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-lg">✕</button>
             </div>
 
             <div className="p-3 rounded-2xl bg-[var(--surface-secondary)] border border-[var(--border-subtle)] mb-4">
@@ -540,23 +546,16 @@ export default function AdminDashboard() {
             </div>
 
             <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Copy to subcategory</label>
-
-            <select value={copyTargetSub} onChange={(e) => setCopyTargetSub(e.target.value)} className="w-full p-3 border border-[var(--border-subtle)] rounded-xl text-sm bg-[var(--brand-bg)] text-white outline-none mb-4">
+            <select value={copyTargetSub} onChange={(e) => setCopyTargetSub(e.target.value)} className="w-full p-3 border border-[var(--border-subtle)] rounded-xl text-sm bg-[var(--brand-bg)] text-[var(--text-primary)] outline-none mb-4">
               <option value="">Select destination</option>
               {getSubCategories().filter((cat) => cat !== "all" && cat !== copyingProduct.subCategory).map((cat, index) => {
                 const temp = tempSubCategories.find((item) => item.id === cat);
                 const translationKey = (tAdmin.subs as any)[activeTab]?.[cat] || cat;
-                return (
-                  <option key={`${cat}-${index}`} value={cat}>
-                    {temp ? (temp.name.en || temp.name.am || temp.name.om || "Special").toUpperCase() : translationKey.toUpperCase()}
-                  </option>
-                );
+                return ( <option key={`${cat}-${index}`} value={cat}>{temp ? (temp.name.en || temp.name.am || temp.name.om || "Special").toUpperCase() : translationKey.toUpperCase()}</option> );
               })}
             </select>
 
-            <button onClick={duplicateProduct} disabled={!copyTargetSub} className="w-full py-3 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-xl font-bold text-sm disabled:opacity-40">
-              Duplicate Package
-            </button>
+            <button onClick={duplicateProduct} disabled={!copyTargetSub} className="w-full py-3 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-xl font-bold text-sm disabled:opacity-40">Duplicate Package</button>
           </div>
         </div>
       )}
@@ -565,7 +564,7 @@ export default function AdminDashboard() {
       <main className="flex-grow p-4 md:p-6 lg:p-10 max-w-7xl mx-auto w-full">
         {!isAdding && (
           <div className="grid grid-cols-3 gap-3 md:gap-6 mb-8">
-            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between transition-colors">
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
                 <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Store Visits</span>
                 <Users size={16} className="text-[var(--brand-gold)]" />
@@ -573,7 +572,7 @@ export default function AdminDashboard() {
               <span className="text-xl md:text-3xl font-black text-[var(--text-primary)]">{analytics.totalPageViews.toLocaleString()}</span>
             </div>
 
-            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between transition-colors">
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
                 <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Orders Initiated</span>
                 <ShoppingCart size={16} className="text-[var(--brand-gold)]" />
@@ -581,7 +580,7 @@ export default function AdminDashboard() {
               <span className="text-xl md:text-3xl font-black text-[var(--brand-gold)]">{analytics.totalOrdersClicked.toLocaleString()}</span>
             </div>
 
-            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between">
+            <div className="bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl md:rounded-3xl p-3.5 md:p-5 shadow-sm flex flex-col justify-between transition-colors">
               <div className="flex items-center justify-between text-[var(--text-muted)] mb-1">
                 <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Conversion</span>
                 <TrendingUp size={16} className="text-emerald-500" />
@@ -592,23 +591,13 @@ export default function AdminDashboard() {
         )}
 
         <div className="text-center mb-6">
-          <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold-light)] to-[var(--brand-gold)]">
-            Manage Inventory
-          </h1>
+          <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-gold-dark)]">Manage Inventory</h1>
         </div>
 
         {/* Dynamic Tab Switcher */}
         <div className="flex justify-center gap-1.5 md:gap-3 mb-6 overflow-x-auto py-1">
           {siteConfig.tabs.map((tab, index) => (
-            <button
-              key={`${tab.id}-${index}`}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 md:px-6 py-2 rounded-full font-bold transition-all duration-300 border text-xs md:text-base whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] border-[var(--brand-gold)] shadow-md"
-                  : "bg-[var(--brand-bg)] text-[var(--brand-gold)] border-[var(--brand-gold)] hover:bg-[var(--surface-secondary)]"
-              }`}
-            >
+            <button key={`${tab.id}-${index}`} onClick={() => setActiveTab(tab.id)} className={`px-4 md:px-6 py-2 rounded-full font-bold transition-all duration-300 border text-xs md:text-base whitespace-nowrap ${activeTab === tab.id ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] border-[var(--brand-gold)] shadow-md" : "bg-transparent text-[var(--brand-gold)] border-[var(--brand-gold)] hover:bg-[var(--surface-secondary)]"}`}>
               {(tAdmin.tabs as any)[tab.id] || tab.id}
             </button>
           ))}
@@ -621,110 +610,57 @@ export default function AdminDashboard() {
               const temp = tempSubCategories.find((item) => item.id === sub);
               const isTemp = !!temp;
               const translationKey = (tAdmin.subs as any)[activeTab]?.[sub] || sub;
-
               return (
-                <button
-                  key={`${sub}-${index}`}
-                  draggable
-                  onDragStart={() => setDraggedSub(sub)}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => handleSubDrop(sub)}
-                  onClick={() => setActiveSub(sub)}
-                  title="Drag to change position"
-                  className={`px-3.5 py-1.5 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap flex-shrink-0 cursor-grab active:cursor-grabbing ${
-                    activeSub === sub
-                      ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] shadow-sm"
-                      : isTemp
-                      ? "bg-amber-900/40 text-amber-400 border border-amber-800/50 hover:bg-amber-900/60"
-                      : "bg-[var(--surface-secondary)] text-white border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)]"
-                  }`}
-                >
+                <button key={`${sub}-${index}`} draggable onDragStart={() => setDraggedSub(sub)} onDragOver={(e) => e.preventDefault()} onDrop={() => handleSubDrop(sub)} onClick={() => setActiveSub(sub)} title="Drag to change position" className={`px-3.5 py-1.5 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap flex-shrink-0 cursor-grab active:cursor-grabbing ${activeSub === sub ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] shadow-sm border-[var(--brand-gold)]" : "bg-[var(--surface-secondary)] text-[var(--text-primary)] border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)]"}`}>
                   {isTemp ? (temp?.name?.en || temp?.name?.am || "Special").toUpperCase() : translationKey.toUpperCase()}
                 </button>
               );
             })}
           </div>
 
-          <select
-            value={sortOption}
-            onChange={(e) => { setSortOption(e.target.value); setProducts((prev) => sortProductList(prev)); }}
-            className="self-center px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-xs font-bold text-white outline-none"
-            title="Sort package list"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="priceLow">Price: Low to High</option>
-            <option value="priceHigh">Price: High to Low</option>
+          <select value={sortOption} onChange={(e) => { setSortOption(e.target.value); setProducts((prev) => sortProductList(prev)); }} className="self-center px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-xs font-bold text-[var(--text-primary)] outline-none transition-colors" title="Sort package list">
+            <option value="newest" className="bg-[var(--brand-bg)]">Newest First</option>
+            <option value="oldest" className="bg-[var(--brand-bg)]">Oldest First</option>
+            <option value="priceLow" className="bg-[var(--brand-bg)]">Price: Low to High</option>
+            <option value="priceHigh" className="bg-[var(--brand-bg)]">Price: High to Low</option>
           </select>
         </div>
 
         {isAdding ? (
-          <form
-            onSubmit={async (e) => {
+          <form onSubmit={async (e) => {
               e.preventDefault();
               if (product.images.length === 0) return alert("Please upload at least one image!");
               setLoading(true);
-
               const productData = { ...product, price: Number(product.price) };
-
-              if (editingId) {
-                await updateDoc(doc(db, "products", editingId), productData);
-              } else {
-                await addDoc(collection(db, "products"), { ...productData, visible: true, createdAt: serverTimestamp() });
-              }
-
+              if (editingId) { await updateDoc(doc(db, "products", editingId), productData); } else { await addDoc(collection(db, "products"), { ...productData, visible: true, createdAt: serverTimestamp() }); }
               setProduct(getInitialFormState()); setEditingId(null); setIsAdding(false); fetchProducts(); setLoading(false);
             }}
-            className="max-w-xl mx-auto bg-[var(--surface-card)] border border-[var(--border-subtle)] p-6 md:p-8 rounded-3xl shadow-xl"
+            className="max-w-xl mx-auto bg-[var(--surface-card)] border border-[var(--border-subtle)] p-6 md:p-8 rounded-3xl shadow-xl transition-colors"
           >
-            <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--text-primary)]">
-              {editingId ? "Edit" : "Add"} {(tAdmin.tabs as any)[activeTab] || activeTab.toUpperCase()}
-            </h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--text-primary)]">{editingId ? "Edit" : "Add"} {(tAdmin.tabs as any)[activeTab] || activeTab.toUpperCase()}</h2>
 
             <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Subcategory</label>
-            <select
-              className="w-full p-3.5 mb-4 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-white font-medium focus:border-[var(--brand-gold)] outline-none text-sm"
-              value={product.subCategory || ""}
-              onChange={(e) => setProduct({ ...product, subCategory: e.target.value })}
-              required
-            >
+            <select className="w-full p-3.5 mb-4 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-[var(--text-primary)] font-medium focus:border-[var(--brand-gold)] outline-none text-sm" value={product.subCategory || ""} onChange={(e) => setProduct({ ...product, subCategory: e.target.value })} required>
               <option value="" disabled>Select Subcategory</option>
               {getSubCategories().filter((c) => c !== "all").map((cat, index) => {
                 const temp = tempSubCategories.find((item) => item.id === cat);
                 const translationKey = (tAdmin.subs as any)[activeTab]?.[cat] || cat;
-                return (
-                  <option key={`${cat}-${index}`} value={cat}>
-                    {temp ? (temp.name.en || temp.name.am || temp.name.om || "Special").toUpperCase() : translationKey.toUpperCase()}
-                  </option>
-                );
+                return ( <option key={`${cat}-${index}`} value={cat}>{temp ? (temp.name.en || temp.name.am || temp.name.om || "Special").toUpperCase() : translationKey.toUpperCase()}</option> );
               })}
             </select>
 
             <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Price (ETB)</label>
-            <input
-              className="w-full p-3.5 mb-4 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-white font-medium placeholder-gray-600 focus:border-[var(--brand-gold)] outline-none text-sm"
-              type="number" placeholder="e.g. 1500" value={product.price} onChange={(e) => setProduct({ ...product, price: e.target.value })} required
-            />
+            <input className="w-full p-3.5 mb-4 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-[var(--text-primary)] font-medium focus:border-[var(--brand-gold)] outline-none text-sm" type="number" placeholder="e.g. 1500" value={product.price} onChange={(e) => setProduct({ ...product, price: e.target.value })} required />
 
             <div className="space-y-3 mb-4">
               <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Descriptions (Multi-language)</label>
               {["am", "en", "om"].map((lang) => (
-                <textarea
-                  key={lang}
-                  className="w-full p-3 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-white font-medium placeholder-gray-600 h-20 focus:border-[var(--brand-gold)] outline-none text-xs md:text-sm"
-                  placeholder={`Description (${lang.toUpperCase()})`}
-                  value={product.description[lang as keyof typeof product.description]}
-                  onChange={(e) => setProduct({ ...product, description: { ...product.description, [lang]: e.target.value } })}
-                  required={lang === "am"}
-                />
+                <textarea key={lang} className="w-full p-3 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-[var(--text-primary)] font-medium h-20 focus:border-[var(--brand-gold)] outline-none text-xs md:text-sm" placeholder={`Description (${lang.toUpperCase()})`} value={product.description[lang as keyof typeof product.description]} onChange={(e) => setProduct({ ...product, description: { ...product.description, [lang]: e.target.value } })} required={lang === "am"} />
               ))}
             </div>
 
             <div className="mb-6">
-              <label className="block text-xs font-bold text-white mb-2">
-                Images ({product.images.length}/{activeTab === "surprise" ? "1" : "3"})
-              </label>
-
+              <label className="block text-xs font-bold text-[var(--text-primary)] mb-2">Images ({product.images.length}/{activeTab === "surprise" ? "1" : "3"})</label>
               <div className="flex gap-2 mb-2 flex-wrap">
                 {product.images.map((url, i) => (
                   <div key={`${url}-${i}`} className="relative w-16 h-16 md:w-20 md:h-20">
@@ -735,30 +671,14 @@ export default function AdminDashboard() {
               </div>
 
               {(activeTab === "surprise" ? product.images.length < 1 : product.images.length < 3) && (
-                <CldUploadWidget
-                  uploadPreset={uploadPreset}
-                  options={{ cloudName: cloudName }}
-                  onSuccess={(res: any) => {
-                    if (res?.info?.secure_url) setProduct((prev) => ({ ...prev, images: [...prev.images, res.info.secure_url] }));
-                    if (typeof document !== "undefined") { document.body.style.overflow = "auto"; document.body.style.position = "static"; }
-                  }}
-                >
-                  {({ open }) => (
-                    <button type="button" onClick={() => open?.()} className="w-full py-3 bg-[var(--surface-secondary)] text-white border border-[var(--border-subtle)] rounded-2xl font-bold text-xs md:text-sm shadow-md hover:bg-gray-800 transition-all">
-                      Upload Image {activeTab === "surprise" ? "" : product.images.length + 1}
-                    </button>
-                  )}
+                <CldUploadWidget uploadPreset={uploadPreset} options={{ cloudName: cloudName }} onSuccess={(res: any) => { if (res?.info?.secure_url) setProduct((prev) => ({ ...prev, images: [...prev.images, res.info.secure_url] })); if (typeof document !== "undefined") { document.body.style.overflow = "auto"; document.body.style.position = "static"; } }}>
+                  {({ open }) => ( <button type="button" onClick={() => open?.()} className="w-full py-3 bg-[var(--surface-secondary)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-2xl font-bold text-xs md:text-sm shadow-md hover:bg-[var(--surface-hover)] transition-all">Upload Image {activeTab === "surprise" ? "" : product.images.length + 1}</button> )}
                 </CldUploadWidget>
               )}
             </div>
 
-            <button type="submit" disabled={loading} className="w-full py-3.5 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-2xl font-bold text-sm md:text-base shadow-lg hover:opacity-95 transition-all disabled:opacity-50">
-              {loading ? "Saving..." : "Save Product"}
-            </button>
-
-            <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setProduct(getInitialFormState()); }} className="w-full mt-2 py-2 text-[var(--text-muted)] text-xs font-semibold hover:text-white">
-              Cancel
-            </button>
+            <button type="submit" disabled={loading} className="w-full py-3.5 bg-[var(--brand-gold)] text-[var(--text-on-gold)] rounded-2xl font-bold text-sm md:text-base shadow-lg hover:opacity-95 transition-all disabled:opacity-50">{loading ? "Saving..." : "Save Product"}</button>
+            <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setProduct(getInitialFormState()); }} className="w-full mt-2 py-2 text-[var(--text-muted)] text-xs font-semibold hover:text-[var(--text-primary)] transition-colors">Cancel</button>
           </form>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -777,20 +697,18 @@ export default function AdminDashboard() {
 
                   <div className="w-[50%] flex flex-col justify-between py-1">
                     <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] md:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest">{titlePrefix} {index + 1}</span>
-                      </div>
+                      <div className="flex items-center justify-between mb-1"><span className="text-[10px] md:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest">{titlePrefix} {index + 1}</span></div>
                       <p className="text-lg md:text-xl font-black text-[var(--brand-gold)] mb-1">{Number(p.price).toLocaleString()} ETB</p>
-                      <p className="text-[11px] text-[var(--text-muted)] line-clamp-3 italic mb-2">{p.description.en || p.description.am}</p>
+                      <p className="text-[11px] text-[var(--text-secondary)] line-clamp-3 italic mb-2">{p.description.en || p.description.am}</p>
                     </div>
 
                     <div className="flex items-center justify-between gap-1 pt-2 border-t border-[var(--border-subtle)]">
-                      <button onClick={() => toggleVisibility(p.id, p.visible)} className={`p-2 rounded-xl text-xs flex items-center justify-center transition-colors ${p.visible === false ? "bg-amber-900/50 text-amber-400" : "bg-[var(--surface-secondary)] text-white hover:bg-gray-700"}`} title="Toggle Visibility">
+                      <button onClick={() => toggleVisibility(p.id, p.visible)} className={`p-2 rounded-xl text-xs flex items-center justify-center transition-colors ${p.visible === false ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400" : "bg-[var(--surface-secondary)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"}`} title="Toggle Visibility">
                         {p.visible === false ? <EyeOff size={14} /> : <Eye size={14} />}
                       </button>
-                      <button onClick={() => handleEdit(p)} className="p-2 bg-blue-900/30 text-blue-400 rounded-xl hover:bg-blue-900/50 transition-colors" title="Edit Product"><Pencil size={14} /></button>
-                      <button onClick={() => { setCopyingProduct(p); setCopyTargetSub(""); }} className="p-2 bg-purple-900/30 text-purple-400 rounded-xl hover:bg-purple-900/50 transition-colors" title="Duplicate Product">📋</button>
-                      <button onClick={() => handleDelete(p.id)} className="p-2 bg-red-900/30 text-red-400 rounded-xl hover:bg-red-900/50 transition-colors" title="Delete Product"><Trash2 size={14} /></button>
+                      <button onClick={() => handleEdit(p)} className="p-2 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-xl hover:opacity-80 transition-colors" title="Edit Product"><Pencil size={14} /></button>
+                      <button onClick={() => { setCopyingProduct(p); setCopyTargetSub(""); }} className="p-2 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 rounded-xl hover:opacity-80 transition-colors" title="Duplicate Product">📋</button>
+                      <button onClick={() => handleDelete(p.id)} className="p-2 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 rounded-xl hover:opacity-80 transition-colors" title="Delete Product"><Trash2 size={14} /></button>
                     </div>
                   </div>
                 </div>
@@ -801,7 +719,7 @@ export default function AdminDashboard() {
       </main>
 
       {/* ===== FOOTER ===== */}
-      <footer className="bg-[#08080A] text-[var(--text-secondary)] mt-12 py-8 px-4 md:px-6 lg:px-10 border-t border-[var(--border-subtle)]">
+      <footer className="bg-[var(--surface-card)] text-[var(--text-secondary)] mt-12 py-8 px-4 md:px-6 lg:px-10 border-t border-[var(--border-subtle)] transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <div>
             <h3 className="text-base font-bold text-[var(--brand-gold)]">{siteConfig.name.en.split(" ")[0]} Admin Panel</h3>
@@ -810,12 +728,7 @@ export default function AdminDashboard() {
           <div className="text-xs text-[var(--text-muted)] flex flex-col items-center md:items-end gap-1.5">
             <p className="flex items-center justify-center md:justify-end gap-1.5">
               Developed by <a href="https://t.me/temesgenwalelign" target="_blank" className="text-[var(--brand-gold)] font-bold hover:underline">Temesgen Walelgn</a>
-              <span className="text-gray-600">|</span>
-              <a href="tel:+251993370491" className="inline-flex items-center gap-1 text-gray-300 hover:text-[var(--brand-gold)] transition-colors"><span className="font-semibold">+251 993 370 491</span></a>
             </p>
-            <a href={`https://www.google.com/maps/search/?api=1&query=${siteConfig.mapSearchQuery}`} target="_blank" className="flex items-center gap-1.5 mt-1 hover:text-[var(--brand-gold)] transition-colors">
-               📍 {siteConfig.locationName.en}
-            </a>
             <p className="mt-2">© {new Date().getFullYear()} {siteConfig.name.en}. All rights reserved.</p>
           </div>
         </div>

@@ -33,7 +33,6 @@ interface TempSubCategory {
 
 export default function UserPage() {
   const [lang, setLang] = useState<"am" | "en" | "om">("am");
-  // Default to the first tab defined in your siteConfig
   const [activeTab, setActiveTab] = useState(siteConfig.tabs[0]?.id || "surprise");
   const [activeSub, setActiveSub] = useState("all");
 
@@ -44,26 +43,40 @@ export default function UserPage() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(true);
 
-  // ===== EVENT THEME STATE =====
+  // ===== THEME STATES =====
+  const [isDarkMode, setIsDarkMode] = useState(false); // Default to Light Mode
   const [eventTheme, setEventTheme] = useState("none");
   const [eventEnabled, setEventEnabled] = useState(false);
   const [eventAnimation, setEventAnimation] = useState(true);
   const [eventParticles, setEventParticles] = useState(false);
 
+  // Read Dark Mode Preference
+  useEffect(() => {
+    const cachedDark = localStorage.getItem(`${siteConfig.storagePrefix}_dark_mode`);
+    if (cachedDark !== null) {
+      setIsDarkMode(cachedDark === "true");
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem(`${siteConfig.storagePrefix}_dark_mode`, String(newMode));
+  };
+
   // ===== TRACK USER PAGE VIEW =====
   useEffect(() => {
-    const hasVisitedSession = sessionStorage.getItem("golden_visited_session");
+    const hasVisitedSession = sessionStorage.getItem(`${siteConfig.storagePrefix}_visited`);
     if (!hasVisitedSession) {
-      const analyticsRef = doc(db, "analytics", "overview");
-      setDoc(analyticsRef, { totalPageViews: increment(1) }, { merge: true })
+      setDoc(doc(db, "analytics", "overview"), { totalPageViews: increment(1) }, { merge: true })
         .catch((err) => console.error("Error recording page view:", err));
-      sessionStorage.setItem("golden_visited_session", "true");
+      sessionStorage.setItem(`${siteConfig.storagePrefix}_visited`, "true");
     }
   }, []);
 
   useEffect(() => {
-    const cachedTheme = localStorage.getItem("golden_event_theme");
-    const cachedEnabled = localStorage.getItem("golden_event_enabled");
+    const cachedTheme = localStorage.getItem(`${siteConfig.storagePrefix}_theme_name`);
+    const cachedEnabled = localStorage.getItem(`${siteConfig.storagePrefix}_theme_enabled`);
     if (cachedTheme) setEventTheme(cachedTheme);
     if (cachedEnabled !== null) setEventEnabled(cachedEnabled === "true");
   }, []);
@@ -71,10 +84,8 @@ export default function UserPage() {
   const [subCategoryOrder, setSubCategoryOrder] = useState<Record<string, string[]>>({});
   const [sortOption, setSortOption] = useState("priceLow");
 
-  // Load translations dynamically from siteConfig
   const t = siteConfig.translations[lang];
 
-  // Load temporary categories in real time
   useEffect(() => {
     return onSnapshot(collection(db, "temporarySubCategories"), snapshot => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TempSubCategory));
@@ -82,7 +93,6 @@ export default function UserPage() {
     }, error => console.error("Temporary categories:", error));
   }, []);
 
-  // Load Event Theme
   useEffect(() => {
     return onSnapshot(doc(db, "settings", "eventTheme"), snapshot => {
       if (!snapshot.exists()) {
@@ -97,22 +107,15 @@ export default function UserPage() {
       setEventEnabled(data.enabled === true);
       setEventAnimation(data.animation !== false);
       setEventParticles(data.particles === true);
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem("golden_event_theme", data.event || "none");
-        localStorage.setItem("golden_event_enabled", data.enabled === true ? "true" : "false");
-      }
     }, error => console.error("Event theme:", error));
   }, []);
 
-  // Load Admin Subcategory Order
   useEffect(() => {
     return onSnapshot(doc(db, "settings", "subCategoryOrder"), snapshot => {
       if (snapshot.exists()) setSubCategoryOrder(snapshot.data().orders || {});
     }, error => console.error("Subcategory order:", error));
   }, []);
 
-  // Dynamically get subcategories based on siteConfig
   const getSubCategoriesForTab = (tab: string) => {
     const configTab = siteConfig.tabs.find(t => t.id === tab);
     const normal = configTab ? configTab.defaultSubs : ["all"];
@@ -130,7 +133,7 @@ export default function UserPage() {
     return [...items].sort((a, b) => {
       if (sortOption === "priceLow") return Number(a.price) - Number(b.price);
       if (sortOption === "priceHigh") return Number(b.price) - Number(a.price);
-      return 0; // Default fallback
+      return 0;
     });
   };
 
@@ -186,8 +189,8 @@ export default function UserPage() {
     const configTab = siteConfig.tabs.find(t => t.id === p.type);
     const titlePrefix = configTab ? configTab.prefix : "PKG";
     const categoryName = getSubName(p.subCategory);
+    
     const packageName = `${titlePrefix} ${index + 1} (${categoryName.toUpperCase()} - ${Number(p.price).toLocaleString()} ETB)`;
-
     const phrase = (t.orderPhrases as any)[p.type] || t.orderPhrases.default;
     const desc = p.description[lang] || p.description.am || p.description.en;
     const message = `ሰላም @${siteConfig.telegramUsername}፣\n\n${phrase}\n\n*${packageName}*\n${desc}\n\n${t.callToAction}`;
@@ -197,7 +200,7 @@ export default function UserPage() {
   };
 
   return (
-    <div suppressHydrationWarning className={`min-h-screen ${eventEnabled && eventTheme !== "none" ? `theme-${eventTheme}` : ""} theme-page flex flex-col`}>
+    <div suppressHydrationWarning className={`min-h-screen ${isDarkMode ? "dark" : ""} ${eventEnabled && eventTheme !== "none" ? `theme-${eventTheme}` : ""} theme-page flex flex-col transition-colors`}>
 
       {eventEnabled && eventParticles && (
         <div className="event-particles">
@@ -205,7 +208,7 @@ export default function UserPage() {
         </div>
       )}
 
-      <header className="bg-[var(--surface-card)] border-b border-[var(--border-subtle)] shadow-sm sticky top-0 z-40">
+      <header className="bg-[var(--surface-card)] border-b border-[var(--border-subtle)] shadow-sm sticky top-0 z-40 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-10 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <img src={siteConfig.logoUrl} alt={siteConfig.name.en} className="h-14 sm:h-16 md:h-[70px] w-auto object-contain" />
@@ -219,18 +222,29 @@ export default function UserPage() {
             </div>
           </div>
 
-          <div className="flex gap-1.5 bg-[var(--surface-secondary)] border border-[var(--border-subtle)] p-1 rounded-full">
-            {(["am", "en", "om"] as const).map((code) => (
-              <button
-                key={code}
-                onClick={() => setLang(code)}
-                className={`px-3 py-1 rounded-full font-bold text-xs ${
-                  lang === code ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)]" : "text-[var(--text-muted)] hover:text-white"
-                }`}
-              >
-                {code === "am" ? "አማ" : code.toUpperCase()}
-              </button>
-            ))}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* DARK MODE TOGGLE */}
+            <button
+              onClick={toggleDarkMode}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[var(--surface-secondary)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--brand-gold)] transition-colors"
+              title="Toggle Theme"
+            >
+              {isDarkMode ? "🌞" : "🌙"}
+            </button>
+
+            <div className="flex gap-1.5 bg-[var(--surface-secondary)] border border-[var(--border-subtle)] p-1 rounded-full transition-colors">
+              {(["am", "en", "om"] as const).map((code) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  className={`px-3 py-1 rounded-full font-bold text-xs transition-colors ${
+                    lang === code ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  {code === "am" ? "አማ" : code.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
@@ -238,7 +252,7 @@ export default function UserPage() {
       <main className="flex-grow p-4 md:p-6 lg:p-10 max-w-7xl mx-auto w-full">
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold-light)] to-[var(--brand-gold)]">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-gold-dark)]">
             {t.collectionTitle}
           </h1>
         </div>
@@ -249,7 +263,7 @@ export default function UserPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-2.5 rounded-full font-bold border-2 text-sm md:text-base ${
+              className={`px-6 py-2.5 rounded-full font-bold border-2 text-sm md:text-base transition-colors ${
                 activeTab === tab.id
                   ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] border-[var(--brand-gold)] shadow-lg"
                   : "bg-transparent text-[var(--brand-gold)] border-[var(--brand-gold)] hover:bg-[var(--surface-secondary)]"
@@ -266,7 +280,7 @@ export default function UserPage() {
             <button
               key={`${sub}-${index}`}
               onClick={() => { setActiveSub(sub); setUserManuallySelected(true); }}
-              className={`px-4 py-1.5 rounded-xl text-xs md:text-sm font-semibold border ${
+              className={`px-4 py-1.5 rounded-xl text-xs md:text-sm font-semibold border transition-colors ${
                 activeSub === sub
                   ? "bg-[var(--brand-gold)] text-[var(--text-on-gold)] border-[var(--brand-gold)] shadow-md"
                   : "bg-[var(--surface-secondary)] text-[var(--text-primary)] border-[var(--border-subtle)] hover:bg-[var(--surface-hover)]"
@@ -279,7 +293,7 @@ export default function UserPage() {
 
         {/* Sorting Menu */}
         <div className="flex justify-end items-center mb-6 px-1">
-          <div className="flex items-center gap-2 bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-3 py-2 rounded-xl shadow-sm">
+          <div className="flex items-center gap-2 bg-[var(--surface-secondary)] border border-[var(--border-subtle)] px-3 py-2 rounded-xl shadow-sm transition-colors">
             <svg className="w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
             </svg>
@@ -288,8 +302,8 @@ export default function UserPage() {
               onChange={(e) => { setSortOption(e.target.value); setProducts((prev) => sortProductList(prev)); }}
               className="bg-transparent text-xs font-bold text-[var(--text-primary)] outline-none cursor-pointer"
             >
-              <option value="priceLow" className="bg-[var(--brand-bg)] text-white">⬆️ Low to high price</option>
-              <option value="priceHigh" className="bg-[var(--brand-bg)] text-white">⬇️ High to low price</option>
+              <option value="priceLow" className="bg-[var(--brand-bg)] text-[var(--text-primary)]">⬆️ Low to high</option>
+              <option value="priceHigh" className="bg-[var(--brand-bg)] text-[var(--text-primary)]">⬇️ High to low</option>
             </select>
           </div>
         </div>
@@ -342,7 +356,7 @@ export default function UserPage() {
                       </div>
                       <p 
                         onClick={() => setSelectedProduct(p)}
-                        className="text-[11px] sm:text-xs md:text-sm text-[var(--text-secondary)] leading-relaxed line-clamp-3 min-h-[50px] cursor-pointer hover:text-white transition-colors"
+                        className="text-[11px] sm:text-xs md:text-sm text-[var(--text-secondary)] leading-relaxed line-clamp-3 min-h-[50px] cursor-pointer hover:text-[var(--text-primary)] transition-colors"
                       >
                         {p.description[lang]}
                       </p>
@@ -365,7 +379,7 @@ export default function UserPage() {
         )}
       </main>
 
-      <footer className="bg-[#08080A] text-[var(--text-secondary)] mt-12 py-10 px-4 md:px-6 lg:px-10 border-t border-[var(--border-subtle)]">
+      <footer className="bg-[var(--surface-card)] text-[var(--text-secondary)] mt-12 py-10 px-4 md:px-6 lg:px-10 border-t border-[var(--border-subtle)] transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
             <h3 className="text-lg font-bold text-[var(--brand-gold)] mb-2">
@@ -390,7 +404,7 @@ export default function UserPage() {
             <div className="text-xs md:text-sm text-[var(--text-muted)] mt-5 space-y-2">
               <p className="flex items-center justify-center md:justify-start gap-2">
                 <svg className="w-4 h-4 text-[var(--brand-gold)]" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                {t.footerContact}: <a href={`tel:${siteConfig.phoneRaw}`} className="hover:text-white underline">{siteConfig.phoneDisplay}</a>
+                {t.footerContact}: <a href={`tel:${siteConfig.phoneRaw}`} className="hover:text-[var(--text-primary)] underline">{siteConfig.phoneDisplay}</a>
               </p>
               <a href={`https://www.google.com/maps/search/?api=1&query=${siteConfig.mapSearchQuery}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 hover:text-[var(--brand-gold)] transition-colors">
                 <svg className="w-4 h-4 text-[var(--brand-gold)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -409,8 +423,8 @@ export default function UserPage() {
       </footer>
 
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-6" onClick={() => setSelectedProduct(null)}>
-          <div className="relative w-full max-w-5xl bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 md:p-6" onClick={() => setSelectedProduct(null)}>
+          <div className="relative w-full max-w-5xl bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] transition-colors" onClick={e => e.stopPropagation()}>
             <GalleryView 
               product={selectedProduct} 
               lang={lang} 
@@ -428,7 +442,6 @@ export default function UserPage() {
   );
 }
 
-// PROFESSIONAL GALLERY VIEW COMPONENT
 function GalleryView({ product, lang, onClose, onOrder, orderText, successText, isOrdering }: any) {
   const [main, setMain] = useState(product.images[0]);
 
@@ -441,21 +454,21 @@ function GalleryView({ product, lang, onClose, onOrder, orderText, successText, 
 
   return (
     <>
-      <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-[var(--surface-secondary)] hover:bg-[var(--surface-hover)] border border-[var(--border-subtle)] text-white rounded-full font-bold transition-colors z-10">✕</button>
+      <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-[var(--surface-secondary)] hover:bg-[var(--surface-hover)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-full font-bold transition-colors z-10">✕</button>
 
-      <div className="w-full md:w-1/2 flex flex-col bg-[var(--brand-bg)] border-b md:border-b-0 md:border-r border-[var(--border-subtle)]">
+      <div className="w-full md:w-1/2 flex flex-col bg-[var(--brand-bg)] border-b md:border-b-0 md:border-r border-[var(--border-subtle)] transition-colors">
         <div className="w-full h-[40vh] md:h-[60vh] relative flex items-center justify-center p-4 md:p-8">
           <img src={main} className="w-full h-full object-contain drop-shadow-lg rounded-lg" alt="Product view" />
         </div>
 
         {product.images.length > 1 && (
-          <div className="flex gap-3 justify-center overflow-x-auto p-4 bg-black/40 backdrop-blur-sm border-t border-[var(--border-subtle)]">
+          <div className="flex gap-3 justify-center overflow-x-auto p-4 bg-[var(--surface-secondary)] border-t border-[var(--border-subtle)] transition-colors">
             {product.images.map((img: string, i: number) => (
               <button
                 key={`${img}-${i}`}
                 onClick={() => setMain(img)}
                 className={`w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${
-                  main === img ? "border-[var(--brand-gold)] scale-105 shadow-[0_0_10px_var(--event-glow)]" : "border-transparent opacity-60 hover:opacity-100 hover:scale-105"
+                  main === img ? "border-[var(--brand-gold)] scale-105 shadow-md" : "border-transparent opacity-60 hover:opacity-100 hover:scale-105"
                 }`}
               >
                 <img src={img} className="w-full h-full object-cover" alt={`Thumbnail ${i + 1}`} />
@@ -467,7 +480,7 @@ function GalleryView({ product, lang, onClose, onOrder, orderText, successText, 
 
       <div className="w-full md:w-1/2 flex flex-col p-6 md:p-8 lg:p-10 max-h-[50vh] md:max-h-none overflow-y-auto">
         <div className="mb-6 pr-8">
-          <span className="inline-block px-3 py-1 bg-[var(--surface-secondary)] border border-[var(--border-subtle)] text-[10px] md:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest rounded-md mb-3">
+          <span className="inline-block px-3 py-1 bg-[var(--surface-secondary)] border border-[var(--border-subtle)] text-[10px] md:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest rounded-md mb-3 transition-colors">
             {titlePrefix}
           </span>
           <h2 className="text-3xl md:text-4xl font-black text-[var(--brand-gold)] tracking-tight">
@@ -482,12 +495,12 @@ function GalleryView({ product, lang, onClose, onOrder, orderText, successText, 
           </p>
         </div>
 
-        <div className="mt-auto pt-6 border-t border-[var(--border-subtle)]">
+        <div className="mt-auto pt-6 border-t border-[var(--border-subtle)] transition-colors">
           <button
             onClick={onOrder}
             disabled={isOrdering}
             className={`w-full py-3.5 md:py-4 text-sm md:text-base font-extrabold rounded-xl shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 ${
-              isOrdering ? "bg-amber-500 text-white" : "bg-[var(--brand-gold)] text-[var(--text-on-gold)] hover:opacity-95 hover:shadow-[0_0_20px_var(--event-glow)]"
+              isOrdering ? "bg-amber-500 text-white" : "bg-[var(--brand-gold)] text-[var(--text-on-gold)] hover:opacity-95"
             }`}
           >
             {isOrdering ? successText : orderText}

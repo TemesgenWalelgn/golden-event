@@ -1,51 +1,63 @@
 @import "tailwindcss";
 
 /* =====================================================
-   ROOT COLORS (DARK LUXURY BASE)
+   ROOT COLORS (LIGHT MODE DEFAULT)
    ===================================================== */
 :root {
   /* ===== BRAND GOLD ===== */
-  --brand-gold: #D4AF37;        /* Metallic Royal Gold */
-  --brand-gold-light: #F3E5AB;  /* Champagne Gold Highlight */
-  --brand-gold-dark: #997A15;   /* Antique Deep Bronze */
+  --brand-gold: #D4AF37;        
+  --brand-gold-light: #F3E5AB;  
+  --brand-gold-dark: #997A15;   
 
-  /* ===== DARK SURFACES ===== */
-  --brand-bg: #0B0B0D;          /* Deep Obsidian Canvas */
-  --surface-card: #141417;      /* Clean Elevated Cards */
-  --surface-secondary: #1E1E24; /* Inputs / Pills / Subcategories */
-  --surface-hover: #26262E;     /* Hover background */
+  /* ===== LIGHT SURFACES ===== */
+  --brand-bg: #F8F9FA;          /* Clean Light Canvas */
+  --surface-card: #FFFFFF;      /* White Elevated Cards */
+  --surface-secondary: #F3F4F6; /* Light gray inputs/pills */
+  --surface-hover: #E5E7EB;     /* Hover gray */
 
-  /* ===== TEXT ===== */
-  --text-primary: #FFFFFF;      /* Crisp Heading White */
-  --text-secondary: #C4C4CC;    /* Muted body text */
-  --text-muted: #7E7E8A;        /* Dimmed metadata */
-  --text-dark: #08080A;         /* Deepest black */
-  --text-on-gold: #0B0B0D;      /* Text on gold buttons */
+  /* ===== LIGHT TEXT ===== */
+  --text-primary: #111827;      /* Dark gray/black for headings */
+  --text-secondary: #4B5563;    /* Muted body text */
+  --text-muted: #9CA3AF;        /* Dimmed metadata */
+  --text-on-gold: #FFFFFF;      /* White text on gold buttons */
 
   /* ===== GLOBAL & BORDERS ===== */
   --background: var(--brand-bg);
   --foreground: var(--text-primary);
-  --border-subtle: #26262B;
+  --border-subtle: #E5E7EB;     /* Light borders */
   --border-gold: rgba(212, 175, 55, 0.45);
 
-  /* ===== EVENT THEME VARIABLES (Default maps to Gold) ===== */
+  /* ===== EVENT THEME VARIABLES ===== */
   --event-primary: var(--brand-gold);
   --event-secondary: var(--brand-gold-light);
   --event-accent: var(--brand-gold-dark);
-  --event-soft: var(--surface-secondary);
-  --event-glow: rgba(212, 175, 55, 0.22);
-}
-
-/* ===== FIX FOOTER BACKGROUND ===== */
-footer {
-  background-color: #08080A !important;
-  border-color: #1F1F24 !important;
+  --event-glow: rgba(212, 175, 55, 0.15);
 }
 
 /* =====================================================
-   TAILWIND THEME & DARK MODE ENFORCEMENT
+   DARK MODE OVERRIDES (.dark class)
    ===================================================== */
+.dark {
+  /* ===== DARK SURFACES ===== */
+  --brand-bg: #0B0B0D;          
+  --surface-card: #141417;      
+  --surface-secondary: #1E1E24; 
+  --surface-hover: #26262E;     
 
+  /* ===== DARK TEXT ===== */
+  --text-primary: #FFFFFF;      
+  --text-secondary: #C4C4CC;    
+  --text-muted: #7E7E8A;        
+  --text-on-gold: #0B0B0D;      /* Dark text on gold buttons */
+
+  /* ===== DARK BORDERS ===== */
+  --border-subtle: #26262B;
+  --event-glow: rgba(212, 175, 55, 0.22);
+}
+
+/* =====================================================
+   TAILWIND THEME ENFORCEMENT
+   ===================================================== */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -53,119 +65,147 @@ footer {
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0B0B0D;
-    --foreground: #FFFFFF;
-  }
-}
-
 body {
   margin: 0;
   background: var(--brand-bg);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  transition: background 0.6s ease, color 0.4s ease;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 /* =====================================================
-   SEASONAL EVENT THEMES (TINTED LUXURY DARK MODE)
+   SEASONAL EVENT THEMES (LIGHT & DARK VARIANTS)
    ===================================================== */
 
-/* 🇪🇹 Ethiopian New Year (Deep Emerald Obsidian) */
+/* 🇪🇹 Ethiopian New Year */
 .theme-newyear {
   --brand-gold: #e1ad3d;
   --brand-gold-light: #fbe69b;
+  --brand-bg: linear-gradient(135deg, #f7fff9, #fff9e8, #f1fbf5);
+  --surface-card: #ffffff;
+  --surface-secondary: #e6f5ec;
+  --border-subtle: #d1ebd9;
+  --event-primary: #176b4d;
+  --event-secondary: #e1ad3d;
+  --event-accent: #16866e;
+  --event-glow: rgba(23, 107, 77, 0.15);
+}
+.dark .theme-newyear {
   --brand-bg: #050F0A; 
   --surface-card: #0A1710;
   --surface-secondary: #102117;
   --border-subtle: #162E20;
-
-  --event-primary: #176b4d;
-  --event-secondary: #e1ad3d;
-  --event-accent: #16866e;
   --event-glow: rgba(23, 107, 77, 0.3);
 }
 
-/* ❤️ Valentine's Day (Deep Ruby Obsidian) */
+/* ❤️ Valentine's Day */
 .theme-valentine {
   --brand-gold: #d84a6a;
   --brand-gold-light: #f19ab0;
+  --brand-bg: linear-gradient(135deg, #fff5f7, #ffe8ef, #ffffff);
+  --surface-card: #ffffff;
+  --surface-secondary: #ffe8ef;
+  --border-subtle: #fbdce5;
+  --event-primary: #8e1736;
+  --event-secondary: #d84a6a;
+  --event-accent: #f19ab0;
+  --event-glow: rgba(216, 74, 106, 0.15);
+}
+.dark .theme-valentine {
   --brand-bg: #120508;
   --surface-card: #1A090D;
   --surface-secondary: #241015;
   --border-subtle: #33151D;
-
-  --event-primary: #d84a6a;
-  --event-secondary: #f19ab0;
-  --event-accent: #8e1736;
   --event-glow: rgba(216, 74, 106, 0.3);
 }
 
-/* 🎄 Christmas (Deep Pine Obsidian) */
+/* 🎄 Christmas */
 .theme-christmas {
   --brand-gold: #d4a638;
   --brand-gold-light: #f1cb75;
+  --brand-bg: linear-gradient(135deg, #f3fbf5, #fff8e5, #fff3f3);
+  --surface-card: #ffffff;
+  --surface-secondary: #ebf6ee;
+  --border-subtle: #dcece2;
+  --event-primary: #12613e;
+  --event-secondary: #d4a638;
+  --event-accent: #b72d35;
+  --event-glow: rgba(18, 97, 62, 0.15);
+}
+.dark .theme-christmas {
   --brand-bg: #050C08;
   --surface-card: #0A140F;
   --surface-secondary: #0F1F16;
   --border-subtle: #14291D;
-
-  --event-primary: #1b8158;
-  --event-secondary: #d4a638;
-  --event-accent: #b72d35;
   --event-glow: rgba(27, 129, 88, 0.3);
 }
 
-/* ☪️ Muslim Holy Days (Deep Teal Obsidian) */
+/* ☪️ Muslim Holy Days */
 .theme-muslim {
   --brand-gold: #d5aa45;
   --brand-gold-light: #f3d485;
+  --brand-bg: linear-gradient(135deg, #f1faf5, #fff9e8, #eef8f4);
+  --surface-card: #ffffff;
+  --surface-secondary: #e6f6ee;
+  --border-subtle: #d6eee2;
+  --event-primary: #086b55;
+  --event-secondary: #d5aa45;
+  --event-accent: #168d73;
+  --event-glow: rgba(8, 107, 85, 0.15);
+}
+.dark .theme-muslim {
   --brand-bg: #040D0B;
   --surface-card: #081714;
   --surface-secondary: #0D241E;
   --border-subtle: #123028;
-
-  --event-primary: #168d73;
-  --event-secondary: #d5aa45;
-  --event-accent: #086b55;
   --event-glow: rgba(22, 141, 115, 0.3);
 }
 
-/* 👔 Father's Day (Deep Sapphire Obsidian) */
+/* 👔 Father's Day */
 .theme-fathers {
   --brand-gold: #c9a447;
   --brand-gold-light: #ebd088;
+  --brand-bg: linear-gradient(135deg, #f1f6fb, #eaf1f8, #fff9e9);
+  --surface-card: #ffffff;
+  --surface-secondary: #e8f0f8;
+  --border-subtle: #d7e4f2;
+  --event-primary: #183b63;
+  --event-secondary: #c9a447;
+  --event-accent: #3675a8;
+  --event-glow: rgba(24, 59, 99, 0.15);
+}
+.dark .theme-fathers {
   --brand-bg: #050812;
   --surface-card: #0A0F1A;
   --surface-secondary: #101624;
   --border-subtle: #182233;
-
-  --event-primary: #3675a8;
-  --event-secondary: #c9a447;
-  --event-accent: #183b63;
   --event-glow: rgba(54, 117, 168, 0.3);
 }
 
-/* 🌷 Mother's Day (Deep Rose Obsidian) */
+/* 🌷 Mother's Day */
 .theme-mothers {
   --brand-gold: #d5a45a;
   --brand-gold-light: #f3ce95;
+  --brand-bg: linear-gradient(135deg, #fff5f8, #fff0f5, #fff9ed);
+  --surface-card: #ffffff;
+  --surface-secondary: #ffebf3;
+  --border-subtle: #fae1eb;
+  --event-primary: #a32f61;
+  --event-secondary: #d5a45a;
+  --event-accent: #c44d7d;
+  --event-glow: rgba(163, 47, 97, 0.15);
+}
+.dark .theme-mothers {
   --brand-bg: #12050A;
   --surface-card: #1A090F;
   --surface-secondary: #241017;
   --border-subtle: #331521;
-
-  --event-primary: #c44d7d;
-  --event-secondary: #d5a45a;
-  --event-accent: #a32f61;
   --event-glow: rgba(196, 77, 125, 0.3);
 }
 
 /* =====================================================
    EVENT BACKGROUND ANIMATION
    ===================================================== */
-
 .theme-page {
   min-height: 100vh;
   background:
@@ -178,11 +218,9 @@ body {
 /* =====================================================
    EVENT CARDS
    ===================================================== */
-
 .theme-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
 }
-
 .theme-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 30px var(--event-glow);
@@ -190,64 +228,34 @@ body {
 }
 
 /* =====================================================
-   ANIMATIONS
+   ANIMATIONS & PARTICLES
    ===================================================== */
-
 @keyframes themeFade {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes particleFall {
   0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
   10% { opacity: 0.8; }
   90% { opacity: 0.8; }
   100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
-
 @keyframes particleSway {
   0%, 100% { margin-left: 0; }
   50% { margin-left: 50px; }
 }
 
-.theme-animate {
-  animation: themeFade 0.6s ease both;
-}
+.theme-animate { animation: themeFade 0.6s ease both; }
 
-/* =====================================================
-   DYNAMIC THEME PARTICLES
-   ===================================================== */
+.event-particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+.event-particles span { position: absolute; top: -50px; font-size: 24px; opacity: 0; animation: particleFall 8s linear infinite, particleSway 4s ease-in-out infinite alternate; }
 
-.event-particles {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.event-particles span {
-  position: absolute;
-  top: -50px;
-  font-size: 24px;
-  opacity: 0;
-  animation: particleFall 8s linear infinite, particleSway 4s ease-in-out infinite alternate;
-}
-
-/* 🇪🇹 New Year (Adey Abeba) */
 .theme-newyear .event-particles span::after { content: "🌼"; filter: drop-shadow(0 0 5px rgba(225, 173, 61, 0.4)); }
-
-/* ❤️ Valentine's Day (Hearts) */
 .theme-valentine .event-particles span::after { content: "❤️"; filter: drop-shadow(0 0 5px rgba(216, 74, 106, 0.4)); }
-
-/* 🎄 Christmas (Snowflakes) */
 .theme-christmas .event-particles span::after { content: "❄️"; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); }
-
-/* ☪️ Muslim Holy Days (Mix of Moons and Stars) */
 .theme-muslim .event-particles span::after { content: "🌙"; color: #d5aa45; filter: drop-shadow(0 0 5px rgba(213, 170, 69, 0.6)); }
 .theme-muslim .event-particles span:nth-child(even)::after { content: "⭐"; }
 
-/* Particle Positions */
 .event-particles span:nth-child(1) { left: 5%; animation-delay: 0s, 0s; animation-duration: 20s, 4s; }
 .event-particles span:nth-child(2) { left: 15%; animation-delay: 2s, 1s; animation-duration: 15s, 3s; font-size: 18px; }
 .event-particles span:nth-child(3) { left: 25%; animation-delay: 4s, 2s; animation-duration: 10s, 5s; }
@@ -264,9 +272,6 @@ body {
 .event-particles span:nth-child(14) { left: 70%; animation-delay: 5.5s, 1.5s; animation-duration: 10s, 5.5s; }
 .event-particles span:nth-child(15) { left: 90%; animation-delay: 0s, 2.5s; animation-duration: 8.5s, 3.5s; font-size: 26px; }
 
-/* =====================================================
-   ACCESSIBILITY
-   ===================================================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
