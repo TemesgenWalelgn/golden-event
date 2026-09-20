@@ -18,7 +18,7 @@ export const siteConfig = {
 
   // 2. ASSETS & UPLOADS
   logoUrl: "https://res.cloudinary.com/dmp2grjb1/image/upload/v1789756986/golden_event_logo-removebg-preview_fwhrqq.png",
-  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "golden-event",
+  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "golden_event",
   storagePrefix: "golden_event",
 
   // 3. CONTACT & SOCIAL MEDIA
