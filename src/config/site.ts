@@ -2,7 +2,7 @@ export const siteConfig = {
   // 1. BRAND NAMES
   name: {
     en: "GOLDEN Events",
-    am: "ጎልደን ኤቨንት",
+    am: "GOLDEN Events",
     om: "GOLDEN Events",
   },
   tagline: {
@@ -12,7 +12,7 @@ export const siteConfig = {
   },
   about: {
     en: "GOLDEN Events - Brighten your love with a gift, and make your event memorable with beautiful decor.",
-    am: "ጎልደን ኤቨንት - ፍቅሮን በስጦታ እና ፕሮግራሞትን በሚያምር የዲኮር ስራ ያድምቁ።",
+    am: "GOLDEN Events - ፍቅሮን በስጦታ እና ፕሮግራሞትን በሚያምር የዲኮር ስራ ያድምቁ።",
     om: "GOLDEN Events - Jaalala keessan kennaadhaan, sagantaa keessanis hojii faaya baredaadhaan miidhagsaa.",
   },
 
@@ -32,7 +32,7 @@ export const siteConfig = {
   // 4. LOCATION
   locationName: {
     en: "GOLDEN Events, Dire Dawa, Ethiopia",
-    am: "ጎልደን ኤቨንት, ድሬዳዋ, ኢትዮጵያ",
+    am: "GOLDEN Events, ድሬዳዋ, ኢትዮጵያ",
     om: "GOLDEN Events, Dire Dawa, Itoophiyaa",
   },
   mapSearchQuery: "GOLDEN+events+diredawa",
