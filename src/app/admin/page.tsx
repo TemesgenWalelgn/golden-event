@@ -45,7 +45,6 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Dynamic default tab based on config
   const [activeTab, setActiveTab] = useState(siteConfig.tabs[0]?.id || "surprise");
   const [activeSub, setActiveSub] = useState("all");
   const [products, setProducts] = useState<Product[]>([]);
@@ -58,7 +57,7 @@ export default function AdminDashboard() {
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [editingTempId, setEditingTempId] = useState<string | null>(null);
 
-  // ===== THEME STATES =====
+  // ===== THEME STATES (This fixes your error!) =====
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [eventTheme, setEventTheme] = useState("none");
   const [eventEnabled, setEventEnabled] = useState(false);
@@ -70,7 +69,6 @@ export default function AdminDashboard() {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dmp2grjb1";
   const uploadPreset = siteConfig.uploadPreset || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "golden_event";
 
-  // Use English translations as the default base for Admin UI
   const tAdmin = siteConfig.translations.en;
 
   useEffect(() => {
@@ -94,7 +92,6 @@ export default function AdminDashboard() {
     });
   }, [isAuthenticated]);
 
-  // Load Theme Preferences
   useEffect(() => {
     const cachedDark = localStorage.getItem(`${siteConfig.storagePrefix}_dark_mode`);
     if (cachedDark !== null) {
@@ -371,7 +368,6 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* DARK MODE TOGGLE */}
             <button 
               onClick={toggleDarkMode} 
               className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[var(--surface-secondary)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--brand-gold)] transition-colors" 
@@ -542,7 +538,9 @@ export default function AdminDashboard() {
 
             <div className="p-3 rounded-2xl bg-[var(--surface-secondary)] border border-[var(--border-subtle)] mb-4">
               <p className="text-xs font-bold text-[var(--text-muted)]">Current package</p>
-              <p className="text-sm font-black text-[var(--brand-gold)] mt-1">{Number(copyingProduct.price).toLocaleString()} ETB</p>
+              {copyingProduct.type !== "decor" && (
+                <p className="text-sm font-black text-[var(--brand-gold)] mt-1">{Number(copyingProduct.price).toLocaleString()} ETB</p>
+              )}
             </div>
 
             <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Copy to subcategory</label>
@@ -631,7 +629,10 @@ export default function AdminDashboard() {
               e.preventDefault();
               if (product.images.length === 0) return alert("Please upload at least one image!");
               setLoading(true);
-              const productData = { ...product, price: Number(product.price) };
+
+              // Set price to 0 if we are in the decor tab
+              const productData = { ...product, price: activeTab === "decor" ? 0 : Number(product.price) };
+
               if (editingId) { await updateDoc(doc(db, "products", editingId), productData); } else { await addDoc(collection(db, "products"), { ...productData, visible: true, createdAt: serverTimestamp() }); }
               setProduct(getInitialFormState()); setEditingId(null); setIsAdding(false); fetchProducts(); setLoading(false);
             }}
@@ -649,8 +650,13 @@ export default function AdminDashboard() {
               })}
             </select>
 
-            <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Price (ETB)</label>
-            <input className="w-full p-3.5 mb-4 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-[var(--text-primary)] font-medium focus:border-[var(--brand-gold)] outline-none text-sm" type="number" placeholder="e.g. 1500" value={product.price} onChange={(e) => setProduct({ ...product, price: e.target.value })} required />
+            {/* ONLY SHOW PRICE INPUT IF NOT DECOR */}
+            {activeTab !== "decor" && (
+              <>
+                <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Price (ETB)</label>
+                <input className="w-full p-3.5 mb-4 border border-[var(--border-subtle)] rounded-2xl bg-[var(--brand-bg)] text-[var(--text-primary)] font-medium focus:border-[var(--brand-gold)] outline-none text-sm" type="number" placeholder="e.g. 1500" value={product.price} onChange={(e) => setProduct({ ...product, price: e.target.value })} required />
+              </>
+            )}
 
             <div className="space-y-3 mb-4">
               <label className="block text-xs font-bold text-[var(--text-muted)] mb-1">Descriptions (Multi-language)</label>
@@ -698,7 +704,12 @@ export default function AdminDashboard() {
                   <div className="w-[50%] flex flex-col justify-between py-1">
                     <div>
                       <div className="flex items-center justify-between mb-1"><span className="text-[10px] md:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest">{titlePrefix} {index + 1}</span></div>
-                      <p className="text-lg md:text-xl font-black text-[var(--brand-gold)] mb-1">{Number(p.price).toLocaleString()} ETB</p>
+                      
+                      {/* ONLY SHOW PRICE TEXT IF NOT DECOR */}
+                      {p.type !== "decor" && (
+                        <p className="text-lg md:text-xl font-black text-[var(--brand-gold)] mb-1">{Number(p.price).toLocaleString()} ETB</p>
+                      )}
+                      
                       <p className="text-[11px] text-[var(--text-secondary)] line-clamp-3 italic mb-2">{p.description.en || p.description.am}</p>
                     </div>
 

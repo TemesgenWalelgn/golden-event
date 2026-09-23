@@ -190,17 +190,25 @@ export default function UserPage() {
     const titlePrefix = configTab ? configTab.prefix : "PKG";
     const categoryName = getSubName(p.subCategory);
     
-    const packageName = `${titlePrefix} ${index + 1} (${categoryName.toUpperCase()} - ${Number(p.price).toLocaleString()} ETB)`;
+    // Do not show price in Whatsapp/Telegram string if it is decor
+    const priceString = p.type === "decor" ? "" : ` - ${Number(p.price).toLocaleString()} ETB`;
+    const packageName = `${titlePrefix} ${index + 1} (${categoryName.toUpperCase()}${priceString})`;
+
     const phrase = (t.orderPhrases as any)[p.type] || t.orderPhrases.default;
     const desc = p.description[lang] || p.description.am || p.description.en;
-    const message = `ሰላም @${siteConfig.telegramUsername}፣\n\n${phrase}\n\n*${packageName}*\n${desc}\n\n${t.callToAction}`;
+    
+    // Grab the first image URL to include in the message
+    const photoUrl = p.images?.[0] || "";
+
+    // Add the photo link right into the message text
+    const message = `ሰላም @${siteConfig.telegramUsername}፣\n\n${phrase}\n\n*${packageName}*\n${desc}\n\n🖼️ Link: ${photoUrl}\n\n${t.callToAction}`;
 
     window.open(`https://t.me/${siteConfig.telegramUsername}?text=${encodeURIComponent(message)}`, "_blank");
     setTimeout(() => setLoadingId(null), 2000);
   };
 
   return (
-    <div suppressHydrationWarning className={`min-h-screen ${isDarkMode ? "dark" : ""} ${eventEnabled && eventTheme !== "none" ? `theme-${eventTheme}` : ""} theme-page flex flex-col transition-colors`}>
+    <div suppressHydrationWarning className={`min-h-screen ${isDarkMode ? "dark" : ""} ${eventEnabled && eventTheme !== "none" ? `theme-${eventTheme}` : ""} theme-page flex flex-col transition-colors duration-300`}>
 
       {eventEnabled && eventParticles && (
         <div className="event-particles">
@@ -349,11 +357,15 @@ export default function UserPage() {
 
                   <div className="flex flex-col flex-1 pt-3 px-1">
                     <div>
-                      <div className="mb-1.5">
-                        <span className="text-base sm:text-lg md:text-xl font-black text-[var(--brand-gold)] block">
-                          {Number(p.price).toLocaleString()} ETB
-                        </span>
-                      </div>
+                      {/* ONLY SHOW PRICE IF IT IS NOT DECOR */}
+                      {p.type !== "decor" && (
+                        <div className="mb-1.5">
+                          <span className="text-base sm:text-lg md:text-xl font-black text-[var(--brand-gold)] block">
+                            {Number(p.price).toLocaleString()} ETB
+                          </span>
+                        </div>
+                      )}
+
                       <p 
                         onClick={() => setSelectedProduct(p)}
                         className="text-[11px] sm:text-xs md:text-sm text-[var(--text-secondary)] leading-relaxed line-clamp-3 min-h-[50px] cursor-pointer hover:text-[var(--text-primary)] transition-colors"
@@ -442,6 +454,7 @@ export default function UserPage() {
   );
 }
 
+// PROFESSIONAL GALLERY VIEW COMPONENT
 function GalleryView({ product, lang, onClose, onOrder, orderText, successText, isOrdering }: any) {
   const [main, setMain] = useState(product.images[0]);
 
@@ -483,9 +496,13 @@ function GalleryView({ product, lang, onClose, onOrder, orderText, successText, 
           <span className="inline-block px-3 py-1 bg-[var(--surface-secondary)] border border-[var(--border-subtle)] text-[10px] md:text-xs font-black text-[var(--text-muted)] uppercase tracking-widest rounded-md mb-3 transition-colors">
             {titlePrefix}
           </span>
-          <h2 className="text-3xl md:text-4xl font-black text-[var(--brand-gold)] tracking-tight">
-            {Number(product.price).toLocaleString()} ETB
-          </h2>
+          
+          {/* ONLY SHOW PRICE IN POP-UP IF NOT DECOR */}
+          {product.type !== "decor" && (
+            <h2 className="text-3xl md:text-4xl font-black text-[var(--brand-gold)] tracking-tight">
+              {Number(product.price).toLocaleString()} ETB
+            </h2>
+          )}
         </div>
 
         <div className="flex-1 mb-8">

@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   
   // This bypasses the TS check while keeping the config functional for your dev environment
   // @ts-ignore
-  allowedDevOrigins: ["192.168.1.5"],
+  allowedDevOrigins: ["192.168.1.4"],
 };
 
 export default nextConfig;
