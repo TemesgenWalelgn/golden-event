@@ -89,6 +89,7 @@ export default function UserPage() {
   useEffect(() => {
     return onSnapshot(collection(db, "temporarySubCategories"), snapshot => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TempSubCategory));
+      // Only store currently ENABLED temp subcategories
       setTempSubs(data.filter(x => x.enabled).sort((a, b) => (a.order ?? 999) - (b.order ?? 999)));
     }, error => console.error("Temporary categories:", error));
   }, []);
@@ -158,6 +159,7 @@ export default function UserPage() {
     }
   }, [activeTab, subCategoryOrder, tempSubs, userManuallySelected]);
 
+  // ===== FILTERING LOGIC UPDATE =====
   useEffect(() => {
     setIsDataLoading(true);
     const q = query(collection(db, "products"), where("type", "==", activeTab));
@@ -169,14 +171,28 @@ export default function UserPage() {
         images: doc.data().images || (doc.data().imageUrl ? [doc.data().imageUrl] : [])
       } as Product));
 
+      // Remove exact duplicates & filter out manually hidden products
       data = Array.from(new Map(data.map(item => [item.id, item])).values());
       data = data.filter(p => p.visible !== false);
-      if (activeSub !== "all") data = data.filter(p => p.subCategory === activeSub);
+
+      // Determine which subcategories are currently allowed (Default Config Subs + Enabled Temp Subs)
+      const configTab = siteConfig.tabs.find(t => t.id === activeTab);
+      const normalSubs = configTab ? configTab.defaultSubs : ["all"];
+      const enabledTempSubs = tempSubs.filter(x => x.type === activeTab).map(x => x.id);
+      const allowedSubs = [...normalSubs, ...enabledTempSubs];
+
+      if (activeSub !== "all") {
+        // If a specific sub is selected, show only that
+        data = data.filter(p => p.subCategory === activeSub);
+      } else {
+        // If "ALL" is selected, strip out packages that belong to a disabled temporary category
+        data = data.filter(p => allowedSubs.includes(p.subCategory));
+      }
 
       setProducts(sortProductList(data));
       setIsDataLoading(false);
     });
-  }, [activeTab, activeSub, sortOption]);
+  }, [activeTab, activeSub, sortOption, tempSubs]); // tempSubs added to dependency so it updates instantly when disabled
 
   const handleOrder = (p: Product, index: number) => {
     setLoadingId(p.id);
@@ -454,7 +470,6 @@ export default function UserPage() {
   );
 }
 
-// PROFESSIONAL GALLERY VIEW COMPONENT
 function GalleryView({ product, lang, onClose, onOrder, orderText, successText, isOrdering }: any) {
   const [main, setMain] = useState(product.images[0]);
 
